@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Shield, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Shield, AlertTriangle, ArrowRight, User } from 'lucide-react';
 import { getCurrentDomainConfig, canAccessDomain, redirectToUserDomain, DomainConfig } from '../utils/domainUtils';
 import { useAppStore } from '../stores/appStore';
 import { getCurrentUser } from '../lib/supabase';
@@ -29,19 +29,25 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
     const config = getCurrentDomainConfig();
     setDomainConfig(config);
     
-    // If we don't have current user in store, try to get it from Supabase
-    if (!currentUser && !authChecked) {
-      try {
-        const user = await getCurrentUser();
-        if (user) {
-          // Update the store with the current user
-          const { setCurrentUser, setIsAuthenticated } = useAppStore.getState();
-          setCurrentUser(user);
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
-        console.error('Error checking auth status:', error);
+    // Always check authentication status from Supabase
+    try {
+      const user = await getCurrentUser();
+      const { setCurrentUser, setIsAuthenticated } = useAppStore.getState();
+      
+      if (user) {
+        console.log('User found:', user);
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+      } else {
+        console.log('No authenticated user found');
+        setCurrentUser(null);
+        setIsAuthenticated(false);
       }
+    } catch (error) {
+      console.error('Error checking auth status:', error);
+      const { setCurrentUser, setIsAuthenticated } = useAppStore.getState();
+      setCurrentUser(null);
+      setIsAuthenticated(false);
     }
     
     setAuthChecked(true);
@@ -50,8 +56,16 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
   const updateAccess = () => {
     if (!domainConfig) return;
     
+    console.log('Checking access:', { 
+      userRole: currentUser?.role, 
+      domainType: domainConfig.userType,
+      isAuthenticated 
+    });
+    
     const userRole = currentUser?.role || null;
     const canAccess = canAccessDomain(userRole, domainConfig);
+    
+    console.log('Access result:', canAccess);
     setHasAccess(canAccess);
     setLoading(false);
   };
@@ -92,8 +106,8 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
               You need to sign in to access the <strong>{domainConfig.userType}</strong> portal.
             </p>
             
-            {isAuthenticated && currentUser ? (
-              <div className="space-y-4">
+            <div className="space-y-4">
+              {isAuthenticated && currentUser ? (
                 <div className="p-4 bg-blue-50 rounded-lg">
                   <p className="text-sm text-blue-800">
                     You are signed in as: <strong>{currentUser.role}</strong>
@@ -102,29 +116,33 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
                     Required role: <strong>{domainConfig.userType}</strong>
                   </p>
                 </div>
-                
-                <button
-                  onClick={handleRedirect}
-                  className="flex items-center justify-center gap-2 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Go to {currentUser.role} portal
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <p className="text-sm text-gray-500">
-                  Please sign in with appropriate credentials to access this portal.
-                </p>
-                
-                <button
-                  onClick={() => window.location.href = '/'}
-                  className="w-full bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Go to Customer Portal
-                </button>
-              </div>
-            )}
+              ) : (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <User className="w-4 h-4 text-gray-600" />
+                    <p className="text-sm text-gray-700 font-medium">Authentication Required</p>
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    Please sign in with {domainConfig.userType} credentials to access this portal.
+                  </p>
+                </div>
+              )}
+              
+              <button
+                onClick={() => window.location.href = '/'}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <User className="w-4 h-4" />
+                Sign In
+              </button>
+              
+              <button
+                onClick={() => window.location.href = '/'}
+                className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+              >
+                Go to Public Showroom
+              </button>
+            </div>
           </div>
         </div>
       </div>
