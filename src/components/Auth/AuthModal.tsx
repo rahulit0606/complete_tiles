@@ -33,6 +33,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setSuccess('');
 
     try {
+      if (mode === 'signup') {
           // Signup is disabled for regular users
           const result = await signIn(formData.email, formData.password);
           if (result.user) {
@@ -55,7 +56,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               window.location.href = '/seller';
             }
           }, 1000);
-        }
+        
       } else {
         await signIn(formData.email, formData.password);
         setSuccess('Signed in successfully!');
