@@ -126,12 +126,18 @@ export const getMostTriedTiles = async (showroomId: string, limit = 10) => {
 };
 
 // Authentication functions
-export const signUp = async (email: string, password: string, fullName: string, role: 'customer' | 'seller' = 'customer') => {
+export const signUp = async (email: string, password: string, fullName: string, role: 'seller' | 'admin' = 'seller') => {
   if (!isSupabaseConfigured()) {
     throw new Error('Supabase not configured. Please set up your Supabase credentials.');
   }
   
   try {
+    // Only allow admin to create new accounts
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.role !== 'admin') {
+      throw new Error('Only administrators can create new accounts. Please contact your admin.');
+    }
+    
     console.log('Starting signup process...', { email, role });
     
     const { data, error } = await supabase.auth.signUp({

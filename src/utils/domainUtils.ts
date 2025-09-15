@@ -12,11 +12,11 @@ export interface DomainConfig {
 
 // Domain configurations
 export const DOMAIN_CONFIGS: Record<string, DomainConfig> = {
-  // Customer domain
-  'customers': {
-    domain: 'customers',
-    userType: 'customer',
-    title: 'Tile Showroom - Customer Portal',
+  // Main domain (public showroom)
+  'main': {
+    domain: 'main',
+    userType: 'seller', // Default to seller for main site
+    title: 'Tile Showroom - Virtual Showroom',
     theme: {
       primary: '#2563eb', // Blue
       secondary: '#1e40af',
@@ -50,37 +50,31 @@ export const DOMAIN_CONFIGS: Record<string, DomainConfig> = {
 // Get current domain configuration
 export const getCurrentDomainConfig = (): DomainConfig => {
   const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
   
-  // Extract subdomain
-  const subdomain = hostname.split('.')[0];
-  
-  // For localhost development, check for port or subdomain patterns
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    const port = window.location.port;
-    const path = window.location.pathname;
-    
-    // Check URL patterns for development
-    if (path.startsWith('/seller') || port === '5174') {
-      return DOMAIN_CONFIGS.seller;
-    } else if (path.startsWith('/admin') || port === '5175') {
-      return DOMAIN_CONFIGS.admin;
-    } else {
-      return DOMAIN_CONFIGS.customers;
-    }
+  // Simple path-based routing for all domains
+  if (pathname.startsWith('/admin')) {
+    return DOMAIN_CONFIGS.admin;
+  } else if (pathname.startsWith('/seller')) {
+    return DOMAIN_CONFIGS.seller;
+  } else {
+    // Default to main showroom for all other paths
+    return DOMAIN_CONFIGS.main;
   }
-  
-  // Production domain mapping
-  return DOMAIN_CONFIGS[subdomain] || DOMAIN_CONFIGS.customers;
 };
 
 // Check if user can access current domain
 export const canAccessDomain = (userRole: string | null, domainConfig: DomainConfig): boolean => {
-  if (!userRole) {
-    // Guests can only access customer domain
-    return domainConfig.userType === 'customer';
+  // Always allow access to main showroom (public)
+  if (domainConfig.userType === 'seller' && domainConfig.domain === 'main') {
+    return true;
   }
   
-  // Users can access their designated domain
+  // For specific portals, require authentication and matching role
+  if (!userRole) {
+    return false;
+  }
+  
   return userRole === domainConfig.userType;
 };
 

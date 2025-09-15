@@ -3,12 +3,34 @@ import { Shield, Users, Store, BarChart3, TrendingUp, Eye } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
 import { getAllSellers, getAllAnalytics } from '../lib/supabase';
 
+import { createSellerProfile } from '../lib/supabase';
+
+interface NewSellerForm {
+  email: string;
+  password: string;
+  fullName: string;
+  businessName: string;
+  businessAddress: string;
+  phone: string;
+  website: string;
+}
+
 export const AdminDashboard: React.FC = () => {
   const { currentUser } = useAppStore();
-  const [activeTab, setActiveTab] = useState<'overview' | 'sellers' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'sellers' | 'analytics' | 'create-seller'>('overview');
   const [sellers, setSellers] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [creatingSeller, setCreatingSeller] = useState(false);
+  const [newSeller, setNewSeller] = useState<NewSellerForm>({
+    email: '',
+    password: '',
+    fullName: '',
+    businessName: '',
+    businessAddress: '',
+    phone: '',
+    website: ''
+  });
 
   useEffect(() => {
     loadData();
@@ -33,6 +55,33 @@ export const AdminDashboard: React.FC = () => {
   const totalViews = analytics.reduce((sum, item) => sum + (item.view_count || 0), 0);
   const totalApplications = analytics.reduce((sum, item) => sum + (item.apply_count || 0), 0);
   const activeSellers = sellers.filter(seller => seller.subscription_status === 'active').length;
+
+  const handleCreateSeller = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreatingSeller(true);
+    
+    try {
+      // Note: In a real implementation, you would need to use Supabase Admin API
+      // to create the auth user first, then create the profile
+      alert('Seller creation functionality requires Supabase Admin API integration. Please create the user in Supabase Auth UI first, then create the seller profile.');
+      
+      // Reset form
+      setNewSeller({
+        email: '',
+        password: '',
+        fullName: '',
+        businessName: '',
+        businessAddress: '',
+        phone: '',
+        website: ''
+      });
+    } catch (error) {
+      console.error('Error creating seller:', error);
+      alert('Failed to create seller account');
+    } finally {
+      setCreatingSeller(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -79,6 +128,15 @@ export const AdminDashboard: React.FC = () => {
           >
             <TrendingUp className="w-4 h-4" />
             Platform Analytics
+          </button>
+          <button
+            onClick={() => setActiveTab('create-seller')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              activeTab === 'create-seller' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Create Seller
           </button>
         </div>
       </div>
@@ -172,6 +230,83 @@ export const AdminDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {activeTab === 'create-seller' && (
+        <div className="space-y-6">
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <h3 className="font-semibold text-purple-800 mb-2">Create New Seller Account</h3>
+            <p className="text-purple-700 text-sm">
+              Only administrators can create new seller accounts. Fill in the details below to register a new seller.
+            </p>
+          </div>
+          
+          <form onSubmit={handleCreateSeller} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={newSeller.email}
+                onChange={(e) => setNewSeller({ ...newSeller, email: e.target.value })}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={newSeller.password}
+                onChange={(e) => setNewSeller({ ...newSeller, password: e.target.value })}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={newSeller.fullName}
+                onChange={(e) => setNewSeller({ ...newSeller, fullName: e.target.value })}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Business Name"
+                value={newSeller.businessName}
+                onChange={(e) => setNewSeller({ ...newSeller, businessName: e.target.value })}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Business Address"
+                value={newSeller.businessAddress}
+                onChange={(e) => setNewSeller({ ...newSeller, businessAddress: e.target.value })}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              />
+              <input
+                type="tel"
+                placeholder="Phone Number"
+                value={newSeller.phone}
+                onChange={(e) => setNewSeller({ ...newSeller, phone: e.target.value })}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              />
+              <input
+                type="url"
+                placeholder="Website (optional)"
+                value={newSeller.website}
+                onChange={(e) => setNewSeller({ ...newSeller, website: e.target.value })}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 md:col-span-2"
+              />
+            </div>
+            
+            <button
+              type="submit"
+              disabled={creatingSeller}
+              className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors font-medium"
+            >
+              {creatingSeller ? 'Creating Seller...' : 'Create Seller Account'}
+            </button>
+          </form>
         </div>
       )}
 

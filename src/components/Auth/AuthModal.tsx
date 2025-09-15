@@ -10,7 +10,7 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
-  const [userType, setUserType] = useState<'customer' | 'seller'>('customer');
+  const [userType, setUserType] = useState<'seller' | 'admin'>('seller');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -91,33 +91,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {mode === 'signup' && (
             <>
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                <button
-                  type="button"
-                  onClick={() => setUserType('customer')}
-                  className={`flex items-center justify-center gap-2 p-3 rounded-lg border transition-colors ${
-                    userType === 'customer'
-                      ? 'bg-blue-50 border-blue-500 text-blue-700'
-                      : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  <User className="w-4 h-4" />
-                  Customer
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUserType('seller')}
-                  className={`flex items-center justify-center gap-2 p-3 rounded-lg border transition-colors ${
-                    userType === 'seller'
-                      ? 'bg-green-50 border-green-500 text-green-700'
-                      : 'bg-gray-50 border-gray-300 text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  <Store className="w-4 h-4" />
-                  Seller
-                </button>
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-red-600" />
+                  <p className="text-red-800 font-medium">Admin Registration Only</p>
+                </div>
+                <p className="text-red-700 text-sm mt-1">
+                  New accounts can only be created by administrators. Please contact your admin for access.
+                </p>
               </div>
+            </>
+          )}
 
+          {mode === 'signup' && (
+            <>
               <input
                 type="text"
                 placeholder="Full Name"
@@ -127,39 +114,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 required
               />
 
-              {userType === 'seller' && (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Business Name"
-                    value={formData.businessName}
-                    onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                  <input
-                    type="text"
-                    placeholder="Business Address"
-                    value={formData.businessAddress}
-                    onChange={(e) => setFormData({ ...formData, businessAddress: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Phone Number"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                  <input
-                    type="url"
-                    placeholder="Website (optional)"
-                    value={formData.website}
-                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </>
-              )}
+              <input
+                type="text"
+                placeholder="Business Name"
+                value={formData.businessName}
+                onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Business Address"
+                value={formData.businessAddress}
+                onChange={(e) => setFormData({ ...formData, businessAddress: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                type="tel"
+                placeholder="Phone Number"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                type="url"
+                placeholder="Website (optional)"
+                value={formData.website}
+                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </>
           )}
 
@@ -194,10 +177,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           )}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || mode === 'signup'}
             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
-            {loading ? 'Processing...' : mode === 'signin' ? 'Sign In' : 'Create Account'}
+            {loading ? 'Processing...' : mode === 'signin' ? 'Sign In' : 'Contact Admin for Registration'}
           </button>
 
           {success && (

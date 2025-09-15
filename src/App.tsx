@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { DomainHeader } from './components/DomainHeader';
 import { DomainGuard } from './components/DomainGuard';
-import { CustomerView } from './components/CustomerView';
 import { SellerDashboard } from './components/SellerDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
+import { PublicShowroom } from './components/PublicShowroom';
 import { AuthModal } from './components/Auth/AuthModal';
 import { useAppStore } from './stores/appStore';
 import { mockShowroom } from './data/mockData';
@@ -35,13 +35,7 @@ function App() {
   }, [setCurrentShowroom]);
 
   useEffect(() => {
-    // Redirect authenticated users to their appropriate domain
-    if (isAuthenticated && currentUser) {
-      const domainConfig = getCurrentDomainConfig();
-      if (currentUser.role !== domainConfig.userType) {
-        redirectToUserDomain(currentUser.role);
-      }
-    }
+    // Don't auto-redirect users - let them navigate manually
   }, [isAuthenticated, currentUser]);
 
   const checkAuthStatus = async () => {
@@ -87,17 +81,23 @@ function App() {
       case 'admin':
         return <AdminDashboard />;
       case 'seller':
-        return <SellerDashboard />;
-      case 'customer':
+        if (domainConfig.domain === 'main') {
+          // Main showroom - public access
+          return <PublicShowroom />;
+        } else {
+          // Seller dashboard - requires seller authentication
+          return <SellerDashboard />;
+        }
       default:
-        return <CustomerView />;
+        return <PublicShowroom />;
     }
   };
 
   const renderAuthPrompt = () => {
     const domainConfig = getCurrentDomainConfig();
     
-    if (isAuthenticated || domainConfig.userType !== 'customer') {
+    // Only show auth prompt on main showroom for unauthenticated users
+    if (isAuthenticated || domainConfig.domain !== 'main') {
       return null;
     }
     
@@ -105,14 +105,14 @@ function App() {
       <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-blue-800">Welcome to Tile Showroom 3D</h3>
-            <p className="text-blue-700 text-sm">Sign in to save favorites and access seller features</p>
+            <h3 className="font-semibold text-blue-800">Tile Showroom 3D - Virtual Experience</h3>
+            <p className="text-blue-700 text-sm">Explore our 3D tile visualization. Sellers and admins can sign in for management features.</p>
           </div>
           <button
             onClick={() => setShowAuthModal(true)}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Sign In / Sign Up
+            Sign In
           </button>
         </div>
       </div>

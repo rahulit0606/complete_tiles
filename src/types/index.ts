@@ -42,7 +42,7 @@ export interface UserProfile {
   user_id: string;
   email: string;
   full_name?: string;
-  role: 'customer' | 'seller' | 'admin';
+  role: 'seller' | 'admin';
   created_at: string;
   updated_at: string;
 }
