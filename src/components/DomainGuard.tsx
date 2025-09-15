@@ -97,53 +97,6 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
     
     setLoading(false);
   };
-        
-        if (userProfile) {
-          setCurrentUser(userProfile);
-          setIsAuthenticated(true);
-          console.log('User authenticated with role:', userProfile.role);
-        } else {
-          console.log('No user profile found for authenticated user, creating one...');
-          
-          // Try to create a profile for the authenticated user
-          try {
-            const { data: newProfile, error: createError } = await supabase!
-              .from('user_profiles')
-              .insert({
-                user_id: session.user.id,
-                email: session.user.email || '',
-                full_name: session.user.user_metadata?.full_name || '',
-                role: session.user.email === 'admin@tileshowroom.com' ? 'admin' : 'seller'
-              })
-              .select()
-              .single();
-            
-            if (createError) {
-              console.error('Error creating profile:', createError);
-              setAuthError('Could not create user profile. Please contact administrator.');
-            } else {
-              console.log('Created new profile:', newProfile);
-              setCurrentUser(newProfile);
-              setIsAuthenticated(true);
-            }
-          } catch (profileError) {
-            console.error('Profile creation failed:', profileError);
-            setAuthError('Could not create user profile. Please contact administrator.');
-          }
-        }
-      } else {
-          setCurrentUser(null);
-          setIsAuthenticated(false);
-        }
-    } catch (error) {
-      console.error('Auth initialization error:', error);
-      setAuthError(`Authentication error: ${error.message}`);
-      setCurrentUser(null);
-      setIsAuthenticated(false);
-    }
-    
-    setLoading(false);
-  };
 
   const handleSignInClick = () => {
     // Redirect to main site with auth parameter
