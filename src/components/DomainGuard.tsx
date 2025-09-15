@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Shield, AlertTriangle, ArrowRight } from 'lucide-react';
 import { getCurrentDomainConfig, canAccessDomain, redirectToUserDomain, DomainConfig } from '../utils/domainUtils';
 import { useAppStore } from '../stores/appStore';
+import { getCurrentUser } from '../lib/supabase';
 
 interface DomainGuardProps {
   children: React.ReactNode;
@@ -12,27 +13,65 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
   const [domainConfig, setDomainConfig] = useState<DomainConfig | null>(null);
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
+    checkAuthAndDomain();
+  }, []);
+
+  useEffect(() => {
+    if (authChecked) {
+      updateAccess();
+    }
+  }, [currentUser, authChecked]);
+
+  const checkAuthAndDomain = async () => {
     const config = getCurrentDomainConfig();
     setDomainConfig(config);
     
+    // If we don't have current user in store, try to get it from Supabase
+    if (!currentUser && !authChecked) {
+      try {
+        const user = await getCurrentUser();
+        if (user) {
+          // Update the store with the current user
+          const { setCurrentUser, setIsAuthenticated } = useAppStore.getState();
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+      }
+    }
+    
+    setAuthChecked(true);
+  };
+
+  const updateAccess = () => {
+    if (!domainConfig) return;
+    
     const userRole = currentUser?.role || null;
-    const canAccess = canAccessDomain(userRole, config);
+    const canAccess = canAccessDomain(userRole, domainConfig);
     setHasAccess(canAccess);
     setLoading(false);
-  }, [currentUser]);
+  };
 
   const handleRedirect = () => {
     if (currentUser?.role) {
       redirectToUserDomain(currentUser.role);
+    } else {
+      // If no user, allow access to customer portal
+      setHasAccess(true);
     }
   };
 
-  if (loading) {
+  if (loading || !authChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking authentication...</p>
+        </div>
       </div>
     );
   }
@@ -50,7 +89,7 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
             
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Restricted</h2>
             <p className="text-gray-600 mb-6">
-              You don't have permission to access the <strong>{domainConfig.userType}</strong> portal.
+              You need to sign in to access the <strong>{domainConfig.userType}</strong> portal.
             </p>
             
             {isAuthenticated && currentUser ? (
@@ -58,6 +97,9 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
                 <div className="p-4 bg-blue-50 rounded-lg">
                   <p className="text-sm text-blue-800">
                     You are signed in as: <strong>{currentUser.role}</strong>
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Required role: <strong>{domainConfig.userType}</strong>
                   </p>
                 </div>
                 

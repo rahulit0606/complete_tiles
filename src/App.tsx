@@ -26,35 +26,13 @@ function App() {
 
   useEffect(() => {
     setCurrentShowroom(mockShowroom);
-    checkAuthStatus();
+    // Remove duplicate auth check since DomainGuard handles it
     handleQRCodeFromURL();
     
     // Apply domain-specific theme
     const domainConfig = getCurrentDomainConfig();
     applyDomainTheme(domainConfig);
   }, [setCurrentShowroom]);
-
-  useEffect(() => {
-    // Don't auto-redirect users - let them navigate manually
-  }, [isAuthenticated, currentUser]);
-
-  const checkAuthStatus = async () => {
-    try {
-      const user = await getCurrentUser();
-      if (user) {
-        setCurrentUser(user);
-        setIsAuthenticated(true);
-        
-        // Load favorites for customers
-        if (user.role === 'customer') {
-          const favorites = await getFavorites();
-          setFavorites(favorites);
-        }
-      }
-    } catch (error) {
-      console.error('Error checking auth status:', error);
-    }
-  };
 
   const handleQRCodeFromURL = () => {
     const urlParams = new URLSearchParams(window.location.search);

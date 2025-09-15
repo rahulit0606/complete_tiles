@@ -65,12 +65,12 @@ export const getCurrentDomainConfig = (): DomainConfig => {
 
 // Check if user can access current domain
 export const canAccessDomain = (userRole: string | null, domainConfig: DomainConfig): boolean => {
-  // Always allow access to main showroom (public)
-  if (domainConfig.userType === 'seller' && domainConfig.domain === 'main') {
+  // Always allow access to main site (public showroom)
+  if (domainConfig.domain === 'main') {
     return true;
   }
   
-  // For specific portals, require authentication and matching role
+  // For seller and admin portals, require authentication and matching role
   if (!userRole) {
     return false;
   }

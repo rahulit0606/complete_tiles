@@ -33,36 +33,34 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setSuccess('');
 
     try {
-      if (mode === 'signup') {
-        const result = await signUp(formData.email, formData.password, formData.fullName, userType);
-        
-        // Show success message for signup
-        setSuccess('Account created successfully! You can now sign in with your credentials.');
-        
-        if (userType === 'seller' && result.user) {
-          try {
-            await createSellerProfile({
-              user_id: result.user.id,
-              business_name: formData.businessName,
-              business_address: formData.businessAddress,
-              phone: formData.phone,
-              website: formData.website
-            });
-          } catch (sellerError) {
-            console.error('Error creating seller profile:', sellerError);
-            // Show warning but don't fail the signup
-            setError('Account created but seller profile setup incomplete. You can update it later.');
+          // Signup is disabled for regular users
+          const result = await signIn(formData.email, formData.password);
+          if (result.user) {
+            // Get user profile to update store
+            const user = await getCurrentUser();
+            if (user) {
+              setCurrentUser(user);
+              setIsAuthenticated(true);
+            }
           }
+          return;
+          
+          // Close modal and redirect based on role
+          setTimeout(() => {
+            onClose();
+            const user = useAppStore.getState().currentUser;
+            if (user?.role === 'admin') {
+              window.location.href = '/admin';
+            } else if (user?.role === 'seller') {
+              window.location.href = '/seller';
+            }
+          }, 1000);
         }
       } else {
         await signIn(formData.email, formData.password);
         setSuccess('Signed in successfully!');
       }
 
-      // Close modal for sign in, keep open for signup to show success message
-      if (!error && mode === 'signin' && !success) {
-        onClose();
-      }
     } catch (err: any) {
       console.error('Authentication error:', err);
       setError(err.message || 'Authentication failed. Please try again.');
@@ -91,12 +89,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {mode === 'signup' && (
             <>
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
+              <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg mb-4">
                 <div className="flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-red-600" />
-                  <p className="text-red-800 font-medium">Admin Registration Only</p>
+                  <Shield className="w-5 h-5 text-orange-600" />
+                  <p className="text-orange-800 font-medium">Registration Restricted</p>
                 </div>
-                <p className="text-red-700 text-sm mt-1">
+                <p className="text-orange-700 text-sm mt-1">
                   New accounts can only be created by administrators. Please contact your admin for access.
                 </p>
               </div>
@@ -177,10 +175,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           )}
           <button
             type="submit"
-            disabled={loading || mode === 'signup'}
+            disabled={loading}
             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
-            {loading ? 'Processing...' : mode === 'signin' ? 'Sign In' : 'Contact Admin for Registration'}
+            {loading ? 'Processing...' : mode === 'signin' ? 'Sign In' : 'Registration Disabled'}
           </button>
 
           {success && (
