@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Shield, AlertTriangle, ArrowRight, User } from 'lucide-react';
-import { getCurrentDomainConfig, canAccessDomain, redirectToUserDomain, DomainConfig } from '../utils/domainUtils';
+import { Shield, AlertTriangle, User, LogIn } from 'lucide-react';
+import { getCurrentDomainConfig, canAccessDomain, DomainConfig } from '../utils/domainUtils';
 import { useAppStore } from '../stores/appStore';
-import { getCurrentUser, supabase } from '../lib/supabase';
+import { getCurrentUser, supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface DomainGuardProps {
   children: React.ReactNode;
@@ -11,8 +11,8 @@ interface DomainGuardProps {
 export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
   const { currentUser, isAuthenticated, setCurrentUser, setIsAuthenticated } = useAppStore();
   const [domainConfig, setDomainConfig] = useState<DomainConfig | null>(null);
-  const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
     initializeAuth();
@@ -22,26 +22,36 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
     const config = getCurrentDomainConfig();
     setDomainConfig(config);
     
-    console.log('Initializing auth for domain:', config.userType);
+    console.log('Domain config:', config);
     
-    // Check if Supabase is configured
-    if (!supabase) {
-      console.log('Supabase not configured, allowing public access');
-      setHasAccess(true);
-      setLoading(false);
-      return;
+    // If Supabase is not configured, allow access to public areas only
+    if (!isSupabaseConfigured()) {
+      console.log('Supabase not configured');
+      if (config.userType === 'customer') {
+        setLoading(false);
+        return;
+      } else {
+        setAuthError('Database not configured. Please set up Supabase credentials.');
+        setLoading(false);
+        return;
+      }
     }
     
     try {
-      // Get current session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      // Check current session
+      const { data: { session }, error: sessionError } = await supabase!.auth.getSession();
       
       if (sessionError) {
         console.error('Session error:', sessionError);
+        setAuthError(`Session error: ${sessionError.message}`);
         setCurrentUser(null);
         setIsAuthenticated(false);
-      } else if (session?.user) {
-        console.log('Found session for user:', session.user.id);
+        setLoading(false);
+        return;
+      }
+
+      if (session?.user) {
+        console.log('Found session for user:', session.user.email);
         
         // Get user profile
         const userProfile = await getCurrentUser();
@@ -50,44 +60,31 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
         if (userProfile) {
           setCurrentUser(userProfile);
           setIsAuthenticated(true);
-          
-          // Check access based on user role and domain
-          const canAccess = canAccessDomain(userProfile.role, config);
-          console.log('Access check result:', { userRole: userProfile.role, domainType: config.userType, canAccess });
-          setHasAccess(canAccess);
+          console.log('User authenticated with role:', userProfile.role);
         } else {
-          console.log('No user profile found');
+          console.log('No user profile found for authenticated user');
           setCurrentUser(null);
           setIsAuthenticated(false);
-          setHasAccess(config.userType === 'customer'); // Allow public access to main site
+          setAuthError('User profile not found. Please contact administrator.');
         }
       } else {
-        console.log('No session found');
+        console.log('No active session');
         setCurrentUser(null);
         setIsAuthenticated(false);
-        setHasAccess(config.userType === 'customer'); // Allow public access to main site
       }
     } catch (error) {
       console.error('Auth initialization error:', error);
+      setAuthError(`Authentication error: ${error.message}`);
       setCurrentUser(null);
       setIsAuthenticated(false);
-      setHasAccess(config.userType === 'customer'); // Allow public access to main site
     }
     
     setLoading(false);
   };
 
-  const checkAuthAndDomain = async () => {
-    const config = getCurrentDomainConfig();
-    setDomainConfig(config);
-    
-    // Always check authentication status from Supabase
-    try {
-      const user = await getCurrentUser();
-      const { setCurrentUser, setIsAuthenticated } = useAppStore.getState();
-    } catch (error) {
-      console.error('Error checking auth and domain:', error);
-    }
+  const handleSignInClick = () => {
+    // Redirect to main site with auth parameter
+    window.location.href = '/?auth=signin';
   };
 
   if (loading) {
@@ -95,11 +92,17 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking authentication...</p>
+          <p className="text-gray-600">Loading...</p>
         </div>
       </div>
     );
   }
+
+  // Check if user can access this domain
+  const hasAccess = domainConfig && (
+    domainConfig.userType === 'customer' || // Public access
+    (isAuthenticated && currentUser && canAccessDomain(currentUser.role, domainConfig))
+  );
 
   if (!hasAccess && domainConfig) {
     return (
@@ -113,18 +116,27 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
             </div>
             
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Restricted</h2>
-            <p className="text-gray-600 mb-6">
-              You need to sign in with {domainConfig.userType} credentials to access this portal.
+            <p className="text-gray-600 mb-4">
+              You need to sign in to access the {domainConfig.userType} portal.
             </p>
+            
+            {authError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+                <p className="text-red-700 text-sm">{authError}</p>
+              </div>
+            )}
             
             <div className="space-y-4">
               {isAuthenticated && currentUser ? (
                 <div className="p-4 bg-blue-50 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    You are signed in as: <strong>{currentUser.role}</strong>
+                    Signed in as: <strong>{currentUser.email}</strong>
                   </p>
-                  <p className="text-xs text-blue-600 mt-1">
-                    Required role: <strong>{domainConfig.userType}</strong>
+                  <p className="text-sm text-blue-600">
+                    Role: <strong>{currentUser.role}</strong>
+                  </p>
+                  <p className="text-xs text-blue-600 mt-2">
+                    Required role for this portal: <strong>{domainConfig.userType}</strong>
                   </p>
                 </div>
               ) : (
@@ -140,13 +152,10 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
               )}
               
               <button
-                onClick={() => {
-                  // Show auth modal or redirect to sign in
-                  window.location.href = '/?auth=signin';
-                }}
+                onClick={handleSignInClick}
                 className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
               >
-                <User className="w-4 h-4" />
+                <LogIn className="w-4 h-4" />
                 Sign In
               </button>
               
