@@ -13,6 +13,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [userType, setUserType] = useState<'customer' | 'seller'>('customer');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const { setCurrentUser, setIsAuthenticated } = useAppStore();
 
   const [formData, setFormData] = useState({
@@ -29,28 +30,41 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       if (mode === 'signup') {
-        const { user } = await signUp(formData.email, formData.password, formData.fullName, userType);
+        const result = await signUp(formData.email, formData.password, formData.fullName, userType);
         
-        if (userType === 'seller' && user) {
-          await createSellerProfile({
-            user_id: user.id,
-            business_name: formData.businessName,
-            business_address: formData.businessAddress,
-            phone: formData.phone,
-            website: formData.website
-          });
+        // Show success message for signup
+        setSuccess('Account created successfully! Please check your email for confirmation.');
+        
+        if (userType === 'seller' && result.user) {
+          try {
+            await createSellerProfile({
+              user_id: result.user.id,
+              business_name: formData.businessName,
+              business_address: formData.businessAddress,
+              phone: formData.phone,
+              website: formData.website
+            });
+          } catch (sellerError) {
+            console.error('Error creating seller profile:', sellerError);
+            // Show warning but don't fail the signup
+            setError('Account created but seller profile setup incomplete. You can update it later.');
+          }
         }
       } else {
         await signIn(formData.email, formData.password);
       }
 
-      // The auth state change will be handled by the auth listener
-      onClose();
+      // Close modal for sign in, keep open for signup to show success message
+      if (!error && mode === 'signin') {
+        onClose();
+      }
     } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+      console.error('Authentication error:', err);
+      setError(err.message || 'Authentication failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -172,6 +186,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </div>
           )}
 
+          {success && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+              {success}
+            </div>
+          )}
           <button
             type="submit"
             disabled={loading}
@@ -180,6 +199,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             {loading ? 'Processing...' : mode === 'signin' ? 'Sign In' : 'Create Account'}
           </button>
 
+          {success && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm"
+            >
+              Close
+            </button>
+          )}
           <div className="text-center">
             <button
               type="button"
