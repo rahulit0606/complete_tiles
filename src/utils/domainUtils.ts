@@ -65,30 +65,34 @@ export const getCurrentDomainConfig = (): DomainConfig => {
 
 // Check if user can access current domain
 export const canAccessDomain = (userRole: string | null, domainConfig: DomainConfig): boolean => {
-  // Allow access to main site for everyone (including unauthenticated)
-  if (domainConfig.userType === 'seller' && domainConfig.domain === 'main') {
+  console.log('🔍 Checking domain access:', { userRole, domainType: domainConfig.userType, domain: domainConfig.domain });
+  
+  // Allow access to main customer site for everyone (including unauthenticated)
+  if (domainConfig.userType === 'customer') {
+    console.log('✅ Allowing access to customer portal');
     return true;
   }
   
   // For admin and seller portals, require authentication and role match
   if (!userRole) {
-    console.log('No user role, denying access to', domainConfig.userType, 'portal');
+    console.log('❌ No user role, denying access to', domainConfig.userType, 'portal');
     return false;
   }
   
   // Admin can access everything
   if (userRole === 'admin') {
+    console.log('✅ Admin user, allowing access to all portals');
     return true;
   }
   
-  // Sellers can access seller portal and main site
-  if (userRole === 'seller' && (domainConfig.userType === 'seller' || domainConfig.domain === 'main')) {
+  // Sellers can access seller portal
+  if (userRole === 'seller' && domainConfig.userType === 'seller') {
+    console.log('✅ Seller user accessing seller portal');
     return true;
   }
   
-  const hasAccess = false;
-  console.log('Access check:', { userRole, requiredRole: domainConfig.userType, hasAccess });
-  return hasAccess;
+  console.log('❌ Access denied:', { userRole, requiredRole: domainConfig.userType });
+  return false;
 };
 
 // Redirect to appropriate domain

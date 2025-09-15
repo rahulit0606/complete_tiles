@@ -286,11 +286,15 @@ export const signOut = async () => {
 
 export const getCurrentUser = async (): Promise<UserProfile | null> => {
   if (!isSupabaseConfigured()) {
+    console.log('❌ Supabase not configured in getCurrentUser');
     return null;
   }
   
   try {
+    console.log('🔍 Getting current user...');
     const { data: { user } } = await supabase.auth.getUser();
+    console.log('🔍 Auth user:', user ? { id: user.id, email: user.email } : null);
+    
     if (!user) return null;
     
     const { data, error } = await supabase
@@ -299,10 +303,12 @@ export const getCurrentUser = async (): Promise<UserProfile | null> => {
       .eq('user_id', user.id)
       .single();
     
+    console.log('🔍 Profile query result:', { data, error });
+    
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error('Error getting current user:', error);
+    console.error('❌ Error getting current user:', error);
     return null;
   }
 };

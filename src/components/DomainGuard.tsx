@@ -22,13 +22,13 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
     const config = getCurrentDomainConfig();
     setDomainConfig(config);
     
-    console.log('Domain config:', config);
-    console.log('Supabase configured:', isSupabaseConfigured());
-    console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+    console.log('🔍 Domain config:', config);
+    console.log('🔍 Supabase configured:', isSupabaseConfigured());
+    console.log('🔍 Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
     
     // If Supabase is not configured, allow access to public areas only
     if (!isSupabaseConfigured()) {
-      console.log('Supabase not configured');
+      console.log('❌ Supabase not configured');
       if (config.userType !== 'admin' && config.userType !== 'seller') {
         setLoading(false);
         return;
@@ -43,6 +43,8 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
       // Check current session
       const { data: { session }, error: sessionError } = await supabase!.auth.getSession();
       
+      console.log('🔍 Session check:', { session: !!session, error: sessionError });
+      
       if (sessionError) {
         console.error('Session error:', sessionError);
         setAuthError(`Session error: ${sessionError.message}`);
@@ -53,11 +55,48 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
       }
 
       if (session?.user) {
-        console.log('Found session for user:', session.user.email);
+        console.log('✅ Found session for user:', session.user.email);
         
         // Get user profile
-        const userProfile = await getCurrentUser();
-        console.log('User profile:', userProfile);
+        try {
+          const userProfile = await getCurrentUser();
+          console.log('🔍 User profile result:', userProfile);
+          
+          if (userProfile) {
+            setCurrentUser(userProfile);
+            setIsAuthenticated(true);
+            console.log('✅ User authenticated with role:', userProfile.role);
+            
+            // Check domain access
+            const hasAccess = canAccessDomain(userProfile.role, config);
+            console.log('🔍 Domain access check:', { 
+              userRole: userProfile.role, 
+              requiredDomain: config.userType, 
+              hasAccess 
+            });
+            
+          } else {
+            console.log('❌ No user profile found for authenticated user');
+            setAuthError('User profile not found. Please contact administrator.');
+          }
+        } catch (profileError) {
+          console.error('❌ Error fetching user profile:', profileError);
+          setAuthError('Could not load user profile. Please try signing in again.');
+        }
+      } else {
+        console.log('❌ No active session found');
+        setCurrentUser(null);
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error('❌ Auth initialization error:', error);
+      setAuthError(`Authentication error: ${error.message}`);
+      setCurrentUser(null);
+      setIsAuthenticated(false);
+    }
+    
+    setLoading(false);
+  };
         
         if (userProfile) {
           setCurrentUser(userProfile);
