@@ -26,13 +26,25 @@ function App() {
 
   useEffect(() => {
     setCurrentShowroom(mockShowroom);
-    // Remove duplicate auth check since DomainGuard handles it
     handleQRCodeFromURL();
+    checkAuthFromURL();
     
     // Apply domain-specific theme
     const domainConfig = getCurrentDomainConfig();
     applyDomainTheme(domainConfig);
   }, [setCurrentShowroom]);
+
+  const checkAuthFromURL = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const authParam = urlParams.get('auth');
+    
+    if (authParam === 'signin') {
+      setShowAuthModal(true);
+      // Clean up URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  };
 
   const handleQRCodeFromURL = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -54,18 +66,13 @@ function App() {
   const renderMainContent = () => {
     const domainConfig = getCurrentDomainConfig();
     
-    // Render based on domain type, not user role
+    // Render based on domain type
     switch (domainConfig.userType) {
       case 'admin':
         return <AdminDashboard />;
       case 'seller':
-        if (domainConfig.domain === 'main') {
-          // Main showroom - public access
-          return <PublicShowroom />;
-        } else {
-          // Seller dashboard - requires seller authentication
-          return <SellerDashboard />;
-        }
+        return <SellerDashboard />;
+      case 'customer':
       default:
         return <PublicShowroom />;
     }
@@ -74,8 +81,8 @@ function App() {
   const renderAuthPrompt = () => {
     const domainConfig = getCurrentDomainConfig();
     
-    // Only show auth prompt on main showroom for unauthenticated users
-    if (isAuthenticated || domainConfig.domain !== 'main') {
+    // Only show auth prompt on public showroom for unauthenticated users
+    if (isAuthenticated || domainConfig.userType !== 'customer') {
       return null;
     }
     

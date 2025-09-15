@@ -2,28 +2,80 @@ import React, { useEffect, useState } from 'react';
 import { Shield, AlertTriangle, ArrowRight, User } from 'lucide-react';
 import { getCurrentDomainConfig, canAccessDomain, redirectToUserDomain, DomainConfig } from '../utils/domainUtils';
 import { useAppStore } from '../stores/appStore';
-import { getCurrentUser } from '../lib/supabase';
+import { getCurrentUser, supabase } from '../lib/supabase';
 
 interface DomainGuardProps {
   children: React.ReactNode;
 }
 
 export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
-  const { currentUser, isAuthenticated } = useAppStore();
+  const { currentUser, isAuthenticated, setCurrentUser, setIsAuthenticated } = useAppStore();
   const [domainConfig, setDomainConfig] = useState<DomainConfig | null>(null);
   const [hasAccess, setHasAccess] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    checkAuthAndDomain();
+    initializeAuth();
   }, []);
 
-  useEffect(() => {
-    if (authChecked) {
-      updateAccess();
+  const initializeAuth = async () => {
+    const config = getCurrentDomainConfig();
+    setDomainConfig(config);
+    
+    console.log('Initializing auth for domain:', config.userType);
+    
+    // Check if Supabase is configured
+    if (!supabase) {
+      console.log('Supabase not configured, allowing public access');
+      setHasAccess(true);
+      setLoading(false);
+      return;
     }
-  }, [currentUser, authChecked]);
+    
+    try {
+      // Get current session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        setCurrentUser(null);
+        setIsAuthenticated(false);
+      } else if (session?.user) {
+        console.log('Found session for user:', session.user.id);
+        
+        // Get user profile
+        const userProfile = await getCurrentUser();
+        console.log('User profile:', userProfile);
+        
+        if (userProfile) {
+          setCurrentUser(userProfile);
+          setIsAuthenticated(true);
+          
+          // Check access based on user role and domain
+          const canAccess = canAccessDomain(userProfile.role, config);
+          console.log('Access check result:', { userRole: userProfile.role, domainType: config.userType, canAccess });
+          setHasAccess(canAccess);
+        } else {
+          console.log('No user profile found');
+          setCurrentUser(null);
+          setIsAuthenticated(false);
+          setHasAccess(config.userType === 'customer'); // Allow public access to main site
+        }
+      } else {
+        console.log('No session found');
+        setCurrentUser(null);
+        setIsAuthenticated(false);
+        setHasAccess(config.userType === 'customer'); // Allow public access to main site
+      }
+    } catch (error) {
+      console.error('Auth initialization error:', error);
+      setCurrentUser(null);
+      setIsAuthenticated(false);
+      setHasAccess(config.userType === 'customer'); // Allow public access to main site
+    }
+    
+    setLoading(false);
+  };
 
   const checkAuthAndDomain = async () => {
     const config = getCurrentDomainConfig();
@@ -34,52 +86,8 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
       const user = await getCurrentUser();
       const { setCurrentUser, setIsAuthenticated } = useAppStore.getState();
       
-      if (user) {
-        console.log('User found:', user);
-        setCurrentUser(user);
-        setIsAuthenticated(true);
-      } else {
-        console.log('No authenticated user found');
-        setCurrentUser(null);
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error('Error checking auth status:', error);
-      const { setCurrentUser, setIsAuthenticated } = useAppStore.getState();
-      setCurrentUser(null);
-      setIsAuthenticated(false);
-    }
-    
-    setAuthChecked(true);
-  };
 
-  const updateAccess = () => {
-    if (!domainConfig) return;
-    
-    console.log('Checking access:', { 
-      userRole: currentUser?.role, 
-      domainType: domainConfig.userType,
-      isAuthenticated 
-    });
-    
-    const userRole = currentUser?.role || null;
-    const canAccess = canAccessDomain(userRole, domainConfig);
-    
-    console.log('Access result:', canAccess);
-    setHasAccess(canAccess);
-    setLoading(false);
-  };
-
-  const handleRedirect = () => {
-    if (currentUser?.role) {
-      redirectToUserDomain(currentUser.role);
-    } else {
-      // If no user, allow access to customer portal
-      setHasAccess(true);
-    }
-  };
-
-  if (loading || !authChecked) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -103,7 +111,7 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
             
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Restricted</h2>
             <p className="text-gray-600 mb-6">
-              You need to sign in to access the <strong>{domainConfig.userType}</strong> portal.
+              You need to sign in with {domainConfig.userType} credentials to access this portal.
             </p>
             
             <div className="space-y-4">
@@ -129,7 +137,10 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
               )}
               
               <button
-                onClick={() => window.location.href = '/'}
+                onClick={() => {
+                  // Show auth modal or redirect to sign in
+                  window.location.href = '/?auth=signin';
+                }}
                 className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
               >
                 <User className="w-4 h-4" />
