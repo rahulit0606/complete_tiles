@@ -132,21 +132,63 @@ export const signUp = async (email: string, password: string, fullName: string, 
   }
   
   try {
+    console.log('Starting signup process...', { email, role });
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          full_name: fullName,
+          role: role
+        }
+      }
     });
+    
+    console.log('Supabase auth signup result:', { data, error });
     
     if (error) throw error;
     
-    // Update user profile with role and full name
+    // Always try to create user profile manually for reliability
     if (data.user) {
-      await supabase
-        .from('user_profiles')
-        .update({ full_name: fullName, role })
-        .eq('user_id', data.user.id);
+      console.log('Creating user profile for:', data.user.id);
+      
+      try {
+        // Wait a moment for auth to settle
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Try to create profile directly
+        const { data: profileData, error: profileError } = await supabase
+          .from('user_profiles')
+          .insert({
+            user_id: data.user.id,
+            email: email,
+            full_name: fullName,
+            role: role
+          })
+          .select()
+          .single();
+        
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          
+          // If it's a duplicate key error, that's actually OK
+          if (profileError.code === '23505') {
+            console.log('Profile already exists, continuing...');
+          } else {
+            // For other errors, throw a more specific error
+            throw new Error(`Failed to create user profile: ${profileError.message}`);
+          }
+        } else {
+          console.log('Profile created successfully:', profileData);
+        }
+      } catch (profileError) {
+        console.error('Profile creation failed:', profileError);
+        throw new Error(`Database error saving new user: ${profileError.message}`);
+      }
     }
     
+    console.log('Signup completed successfully');
     return data;
   } catch (error) {
     console.error('Error signing up:', error);
@@ -160,12 +202,59 @@ export const signIn = async (email: string, password: string) => {
   }
   
   try {
+    console.log('Attempting to sign in with:', email);
+    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     
-    if (error) throw error;
+    console.log('Sign in result:', { data, error });
+    
+    if (error) {
+      // Provide more specific error messages
+      if (error.message.includes('Invalid login credentials')) {
+        throw new Error('Invalid email or password. Please check your credentials and try again.');
+      } else if (error.message.includes('Email not confirmed')) {
+        throw new Error('Please check your email and click the confirmation link before signing in.');
+      } else if (error.message.includes('Too many requests')) {
+        throw new Error('Too many login attempts. Please wait a moment and try again.');
+      } else {
+        throw new Error(`Login failed: ${error.message}`);
+      }
+    }
+    
+    // Check if user profile exists
+    if (data.user) {
+      try {
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', data.user.id)
+          .single();
+        
+        if (profileError && profileError.code !== 'PGRST116') {
+          console.error('Profile fetch error:', profileError);
+        }
+        
+        if (!profile) {
+          console.log('No profile found, creating one...');
+          // Create profile if it doesn't exist
+          await supabase
+            .from('user_profiles')
+            .insert({
+              user_id: data.user.id,
+              email: data.user.email || email,
+              role: 'customer',
+              full_name: data.user.user_metadata?.full_name || ''
+            });
+        }
+      } catch (profileError) {
+        console.error('Error handling user profile:', profileError);
+        // Don't fail login if profile creation fails
+      }
+    }
+    
     return data;
   } catch (error) {
     console.error('Error signing in:', error);

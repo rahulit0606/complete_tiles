@@ -37,7 +37,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         const result = await signUp(formData.email, formData.password, formData.fullName, userType);
         
         // Show success message for signup
-        setSuccess('Account created successfully! Please check your email for confirmation.');
+        setSuccess('Account created successfully! You can now sign in with your credentials.');
         
         if (userType === 'seller' && result.user) {
           try {
@@ -56,10 +56,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         }
       } else {
         await signIn(formData.email, formData.password);
+        setSuccess('Signed in successfully!');
       }
 
       // Close modal for sign in, keep open for signup to show success message
-      if (!error && mode === 'signin') {
+      if (!error && mode === 'signin' && !success) {
         onClose();
       }
     } catch (err: any) {
