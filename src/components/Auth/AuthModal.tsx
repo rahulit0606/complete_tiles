@@ -34,31 +34,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     try {
       if (mode === 'signup') {
-          // Signup is disabled for regular users
-          const result = await signIn(formData.email, formData.password);
-          if (result.user) {
-            // Get user profile to update store
-            const user = await getCurrentUser();
-            if (user) {
-              setCurrentUser(user);
-              setIsAuthenticated(true);
-            }
-          }
-          return;
-          
-          // Close modal and redirect based on role
-          setTimeout(() => {
-            onClose();
-            const user = useAppStore.getState().currentUser;
-            if (user?.role === 'admin') {
-              window.location.href = '/admin';
-            } else if (user?.role === 'seller') {
-              window.location.href = '/seller';
-            }
-          }, 1000);
+        // Signup is disabled for regular users
+        setError('Registration is restricted. Only administrators can create new accounts.');
+        return;
         
       } else {
-        await signIn(formData.email, formData.password);
+        const result = await signIn(formData.email, formData.password);
+        if (result.user) {
+          // Get user profile to update store
+          const user = await getCurrentUser();
+          if (user) {
+            setCurrentUser(user);
+            setIsAuthenticated(true);
+            
+            // Close modal and redirect based on role
+            setTimeout(() => {
+              onClose();
+              if (user.role === 'admin') {
+                window.location.href = '/admin';
+              } else if (user.role === 'seller') {
+                window.location.href = '/seller';
+              }
+            }, 500);
+          }
+        }
         setSuccess('Signed in successfully!');
       }
 

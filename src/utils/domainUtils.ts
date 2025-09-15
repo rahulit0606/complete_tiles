@@ -65,18 +65,28 @@ export const getCurrentDomainConfig = (): DomainConfig => {
 
 // Check if user can access current domain
 export const canAccessDomain = (userRole: string | null, domainConfig: DomainConfig): boolean => {
-  // Allow access to main site (public showroom) for everyone
-  if (domainConfig.userType === 'customer') {
+  // Allow access to main site for everyone (including unauthenticated)
+  if (domainConfig.userType === 'seller' && domainConfig.domain === 'main') {
     return true;
   }
   
-  // For seller and admin portals, require authentication and exact role match
+  // For admin and seller portals, require authentication and role match
   if (!userRole) {
     console.log('No user role, denying access to', domainConfig.userType, 'portal');
     return false;
   }
   
-  const hasAccess = userRole === domainConfig.userType;
+  // Admin can access everything
+  if (userRole === 'admin') {
+    return true;
+  }
+  
+  // Sellers can access seller portal and main site
+  if (userRole === 'seller' && (domainConfig.userType === 'seller' || domainConfig.domain === 'main')) {
+    return true;
+  }
+  
+  const hasAccess = false;
   console.log('Access check:', { userRole, requiredRole: domainConfig.userType, hasAccess });
   return hasAccess;
 };

@@ -4,16 +4,18 @@ import { UserProfile, TileSeller, CustomerFavorite } from '../types';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Create a mock client if environment variables are not configured
-export const supabase = supabaseUrl && supabaseAnonKey && 
-  supabaseUrl !== 'your_supabase_project_url' && 
-  supabaseAnonKey !== 'your_supabase_anon_key'
+// Create Supabase client
+export const supabase = supabaseUrl && supabaseAnonKey 
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
 // Helper function to check if Supabase is configured
 export const isSupabaseConfigured = () => {
-  return supabase !== null;
+  return supabase !== null && 
+    supabaseUrl && 
+    supabaseAnonKey && 
+    supabaseUrl !== 'your_supabase_project_url' && 
+    supabaseAnonKey !== 'your_supabase_anon_key';
 };
 
 // Analytics functions

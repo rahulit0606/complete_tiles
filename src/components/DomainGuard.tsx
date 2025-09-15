@@ -23,15 +23,17 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
     setDomainConfig(config);
     
     console.log('Domain config:', config);
+    console.log('Supabase configured:', isSupabaseConfigured());
+    console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
     
     // If Supabase is not configured, allow access to public areas only
     if (!isSupabaseConfigured()) {
       console.log('Supabase not configured');
-      if (config.userType === 'customer') {
+      if (config.userType !== 'admin' && config.userType !== 'seller') {
         setLoading(false);
         return;
       } else {
-        setAuthError('Database not configured. Please set up Supabase credentials.');
+        setAuthError('Database not configured. Please check your Supabase credentials in the .env file.');
         setLoading(false);
         return;
       }
@@ -62,16 +64,38 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
           setIsAuthenticated(true);
           console.log('User authenticated with role:', userProfile.role);
         } else {
-          console.log('No user profile found for authenticated user');
-          setCurrentUser(null);
-          setIsAuthenticated(false);
-          setAuthError('User profile not found. Please contact administrator.');
+          console.log('No user profile found for authenticated user, creating one...');
+          
+          // Try to create a profile for the authenticated user
+          try {
+            const { data: newProfile, error: createError } = await supabase!
+              .from('user_profiles')
+              .insert({
+                user_id: session.user.id,
+                email: session.user.email || '',
+                full_name: session.user.user_metadata?.full_name || '',
+                role: session.user.email === 'admin@tileshowroom.com' ? 'admin' : 'seller'
+              })
+              .select()
+              .single();
+            
+            if (createError) {
+              console.error('Error creating profile:', createError);
+              setAuthError('Could not create user profile. Please contact administrator.');
+            } else {
+              console.log('Created new profile:', newProfile);
+              setCurrentUser(newProfile);
+              setIsAuthenticated(true);
+            }
+          } catch (profileError) {
+            console.error('Profile creation failed:', profileError);
+            setAuthError('Could not create user profile. Please contact administrator.');
+          }
         }
       } else {
-        console.log('No active session');
-        setCurrentUser(null);
-        setIsAuthenticated(false);
-      }
+          setCurrentUser(null);
+          setIsAuthenticated(false);
+        }
     } catch (error) {
       console.error('Auth initialization error:', error);
       setAuthError(`Authentication error: ${error.message}`);
@@ -99,10 +123,14 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
   }
 
   // Check if user can access this domain
-  const hasAccess = domainConfig && (
-    domainConfig.userType === 'customer' || // Public access
-    (isAuthenticated && currentUser && canAccessDomain(currentUser.role, domainConfig))
-  );
+  const hasAccess = domainConfig && canAccessDomain(currentUser?.role || null, domainConfig);
+  
+  console.log('Access check:', {
+    userRole: currentUser?.role,
+    requiredRole: domainConfig?.userType,
+    isAuthenticated,
+    hasAccess
+  });
 
   if (!hasAccess && domainConfig) {
     return (
