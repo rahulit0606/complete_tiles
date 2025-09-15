@@ -340,10 +340,19 @@ export const getSellerProfile = async (userId: string): Promise<TileSeller | nul
       .eq('user_id', userId)
       .single();
     
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No seller profile found - this is expected, not an error
+        return null;
+      }
+      throw error;
+    }
     return data;
   } catch (error) {
-    console.error('Error getting seller profile:', error);
+    // Only log unexpected errors, not the expected "no profile found" case
+    if (error.code !== 'PGRST116') {
+      console.error('Error getting seller profile:', error);
+    }
     return null;
   }
 };
