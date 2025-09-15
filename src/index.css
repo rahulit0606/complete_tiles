@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Custom Properties for Domain Theming */
+:root {
+  --primary-color: #2563eb;
+  --secondary-color: #1e40af;
+  --accent-color: #3b82f6;
+}
+
+/* Domain-specific styling */
+.domain-primary {
+  color: var(--primary-color);
+}
+
+.domain-bg-primary {
+  background-color: var(--primary-color);
+}
+
+.domain-border-primary {
+  border-color: var(--primary-color);
+}

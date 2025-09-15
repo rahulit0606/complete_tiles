@@ -1,0 +1,4 @@
+# This is a placeholder for the splash screen
+# You'll need to add a splash screen image here
+# Recommended size: 1242x2436 for iPhone X resolution
+# Background should match the backgroundColor in app.json (#2563eb)
