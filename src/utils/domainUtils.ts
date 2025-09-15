@@ -15,7 +15,7 @@ export const DOMAIN_CONFIGS: Record<string, DomainConfig> = {
   // Main domain (public showroom)
   'main': {
     domain: 'main',
-    userType: 'seller', // Default to seller for main site
+    userType: 'customer', // Default to customer for main site
     title: 'Tile Showroom - Virtual Showroom',
     theme: {
       primary: '#2563eb', // Blue

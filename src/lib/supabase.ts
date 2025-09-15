@@ -330,6 +330,7 @@ export const createSellerProfile = async (sellerData: Partial<TileSeller>) => {
 
 export const getSellerProfile = async (userId: string): Promise<TileSeller | null> => {
   if (!isSupabaseConfigured()) {
+    console.warn('Supabase not configured. Returning null for seller profile.');
     return null;
   }
   
@@ -342,17 +343,15 @@ export const getSellerProfile = async (userId: string): Promise<TileSeller | nul
     
     if (error) {
       if (error.code === 'PGRST116') {
-        // No seller profile found - this is expected, not an error
+        // No seller profile found - this is expected for non-sellers
+        console.log('No seller profile found for user:', userId);
         return null;
       }
       throw error;
     }
     return data;
   } catch (error) {
-    // Only log unexpected errors, not the expected "no profile found" case
-    if (error.code !== 'PGRST116') {
-      console.error('Error getting seller profile:', error);
-    }
+    console.warn('Seller profile not found or error occurred:', error.message);
     return null;
   }
 };
