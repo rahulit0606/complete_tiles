@@ -85,7 +85,10 @@ export const DomainGuard: React.FC<DomainGuardProps> = ({ children }) => {
     try {
       const user = await getCurrentUser();
       const { setCurrentUser, setIsAuthenticated } = useAppStore.getState();
-      
+    } catch (error) {
+      console.error('Error checking auth and domain:', error);
+    }
+  };
 
   if (loading) {
     return (
