@@ -5,18 +5,24 @@
 1. [Project Overview](#project-overview)
 2. [Architecture & Technology Stack](#architecture--technology-stack)
 3. [Multi-Domain System](#multi-domain-system)
-4. [Database Schema](#database-schema)
+4. [Database Design](#database-design)
 5. [Authentication & Authorization](#authentication--authorization)
-6. [Frontend Components](#frontend-components)
+6. [Frontend Application](#frontend-application)
 7. [Backend Services](#backend-services)
 8. [Mobile Application](#mobile-application)
 9. [3D Visualization System](#3d-visualization-system)
 10. [QR Code System](#qr-code-system)
 11. [Analytics & Tracking](#analytics--tracking)
-12. [Deployment & Configuration](#deployment--configuration)
+12. [User Roles & Permissions](#user-roles--permissions)
 13. [API Documentation](#api-documentation)
-14. [Development Workflow](#development-workflow)
-15. [Troubleshooting Guide](#troubleshooting-guide)
+14. [Deployment Guide](#deployment-guide)
+15. [Development Workflow](#development-workflow)
+16. [Feature Specifications](#feature-specifications)
+17. [Business Logic](#business-logic)
+18. [Security Implementation](#security-implementation)
+19. [Performance Optimization](#performance-optimization)
+20. [Troubleshooting Guide](#troubleshooting-guide)
+21. [Future Roadmap](#future-roadmap)
 
 ---
 
@@ -24,522 +30,443 @@
 
 ### **What is Tile Showroom 3D?**
 
-Tile Showroom 3D is a comprehensive SaaS platform that revolutionizes how customers experience and purchase tiles. It combines 3D visualization, QR code technology, and multi-tenant architecture to create an immersive tile shopping experience.
+Tile Showroom 3D is a comprehensive Software-as-a-Service (SaaS) platform that revolutionizes the tile industry by providing immersive 3D visualization experiences. The platform bridges the gap between physical tile showrooms and digital customer experiences through cutting-edge 3D technology, QR code integration, and multi-tenant architecture.
 
-### **Key Features**
+### **Core Value Proposition**
 
-- **🏠 3D Room Visualization**: Interactive 3D rooms (hall, washroom, kitchen) with real-time tile application
-- **📱 QR Code Integration**: Physical-to-digital bridge via QR codes on tiles
-- **🏢 Multi-Tenant Architecture**: Separate portals for customers, sellers, and administrators
-- **📊 Advanced Analytics**: Comprehensive tracking of tile views, applications, and conversions
-- **📱 Mobile App**: React Native app for QR scanning and mobile visualization
-- **🔐 Role-Based Access Control**: Secure authentication with seller and admin roles
+- **For Customers**: Experience tiles in realistic 3D environments before making purchase decisions
+- **For Tile Sellers**: Showcase inventory with modern technology, track customer engagement, and increase sales conversion
+- **For Platform Owners**: Generate revenue through subscription-based multi-tenant SaaS model
 
-### **Business Model**
+### **Key Differentiators**
 
-- **SaaS Platform**: Multi-tenant system serving multiple tile sellers
-- **B2B2C Model**: Sellers manage inventory, customers browse and visualize
-- **Revenue Streams**: Subscription fees, commission-based model, premium features
+1. **Immersive 3D Visualization**: Real-time tile application to different room types with realistic lighting and textures
+2. **Physical-Digital Bridge**: QR codes on physical tiles link to digital 3D experiences
+3. **Multi-Tenant Architecture**: Single platform serving multiple tile sellers with isolated data
+4. **Cross-Platform Experience**: Seamless experience across web and mobile applications
+5. **Advanced Analytics**: Comprehensive tracking of customer behavior and tile performance
+
+### **Target Market**
+
+- **Primary**: Tile retailers and distributors looking to modernize their showroom experience
+- **Secondary**: Interior designers and architects seeking visualization tools
+- **Tertiary**: Home improvement stores and construction companies
 
 ---
 
 ## 🏗️ Architecture & Technology Stack
 
-### **Frontend Architecture**
+### **System Architecture Overview**
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Frontend Layer                           │
-├─────────────────────────────────────────────────────────────┤
-│  React 18 + TypeScript + Vite                             │
-│  ├── Customer Portal (/)                                   │
-│  ├── Seller Dashboard (/seller)                           │
-│  └── Admin Panel (/admin)                                 │
-├─────────────────────────────────────────────────────────────┤
-│  State Management: Zustand                                │
-│  Styling: Tailwind CSS                                    │
-│  3D Graphics: Three.js + React Three Fiber               │
-│  Icons: Lucide React                                      │
-└─────────────────────────────────────────────────────────────┘
-```
+The platform follows a modern, scalable architecture with clear separation of concerns:
 
-### **Backend Architecture**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Backend Layer                            │
-├─────────────────────────────────────────────────────────────┤
-│  Supabase (PostgreSQL + Auth + Real-time)                 │
-│  ├── Database: PostgreSQL with RLS                        │
-│  ├── Authentication: Supabase Auth                        │
-│  ├── Real-time: WebSocket subscriptions                   │
-│  └── Storage: File uploads (future)                       │
-├─────────────────────────────────────────────────────────────┤
-│  Edge Functions (Serverless)                              │
-│  ├── QR Code Generation                                   │
-│  ├── Analytics Processing                                 │
-│  └── External API Integration                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### **Mobile Architecture**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Mobile Layer                             │
-├─────────────────────────────────────────────────────────────┤
-│  React Native + Expo                                      │
-│  ├── QR Scanner (Camera integration)                      │
-│  ├── 3D Viewer (Three.js mobile)                         │
-│  ├── Tile Catalog                                         │
-│  └── User Authentication                                  │
-├─────────────────────────────────────────────────────────────┤
-│  Navigation: React Navigation                             │
-│  State: Context API                                       │
-│  Storage: AsyncStorage                                    │
-└─────────────────────────────────────────────────────────────┘
-```
+**Frontend Layer**: React-based web application with TypeScript for type safety
+**Backend Layer**: Supabase providing database, authentication, and real-time capabilities
+**Mobile Layer**: React Native application with Expo for cross-platform compatibility
+**3D Engine**: Three.js for high-performance 3D rendering
+**State Management**: Zustand for predictable state management
+**Styling**: Tailwind CSS for consistent, responsive design
 
 ### **Technology Stack Details**
 
-| Layer | Technology | Version | Purpose |
-|-------|------------|---------|---------|
-| **Frontend** | React | 18.3.1 | UI Framework |
-| | TypeScript | 5.5.3 | Type Safety |
-| | Vite | 5.4.2 | Build Tool |
-| | Tailwind CSS | 3.4.1 | Styling |
-| | Three.js | 0.162.0 | 3D Graphics |
-| | React Three Fiber | 8.1.0 | React 3D Integration |
-| | Zustand | 5.0.8 | State Management |
-| **Backend** | Supabase | Latest | BaaS Platform |
-| | PostgreSQL | 15+ | Database |
-| | PostgREST | Latest | Auto API |
-| **Mobile** | React Native | 0.74.5 | Mobile Framework |
-| | Expo | 51.0.28 | Development Platform |
-| | Three.js | 0.162.0 | Mobile 3D |
-| **Development** | Node.js | 16+ | Runtime |
-| | npm | Latest | Package Manager |
+#### **Frontend Technologies**
+- **React 18.3.1**: Modern React with hooks and concurrent features
+- **TypeScript 5.5.3**: Static typing for better code quality and developer experience
+- **Vite 5.4.2**: Fast build tool with hot module replacement
+- **Tailwind CSS 3.4.1**: Utility-first CSS framework for rapid UI development
+- **Three.js 0.162.0**: 3D graphics library for WebGL rendering
+- **React Three Fiber 8.1.0**: React renderer for Three.js
+- **React Three Drei 9.0.0**: Useful helpers and abstractions for React Three Fiber
+- **Zustand 5.0.8**: Lightweight state management solution
+- **Lucide React 0.344.0**: Beautiful, customizable icons
+
+#### **Backend Technologies**
+- **Supabase**: Backend-as-a-Service providing PostgreSQL database, authentication, and real-time subscriptions
+- **PostgreSQL 15+**: Robust relational database with advanced features
+- **PostgREST**: Automatic REST API generation from database schema
+- **Row Level Security (RLS)**: Database-level security for multi-tenant data isolation
+
+#### **Mobile Technologies**
+- **React Native 0.74.5**: Cross-platform mobile development framework
+- **Expo 51.0.28**: Development platform and toolchain for React Native
+- **Expo Camera**: Camera integration for QR code scanning
+- **Expo GL**: OpenGL ES bindings for mobile 3D rendering
+- **React Navigation 6.x**: Navigation library for mobile app routing
+
+#### **Development Tools**
+- **ESLint**: Code linting and style enforcement
+- **Prettier**: Code formatting
+- **Vitest**: Fast unit testing framework
+- **TypeScript**: Static type checking
+
+### **Architecture Patterns**
+
+#### **Multi-Tenant SaaS Architecture**
+The platform implements a multi-tenant architecture where:
+- **Single Application Instance**: One codebase serves all tenants
+- **Data Isolation**: Each seller's data is completely isolated using RLS
+- **Shared Infrastructure**: Common services and resources are shared efficiently
+- **Customizable Branding**: Each tenant can customize their showroom appearance
+
+#### **Domain-Driven Design**
+The application is organized around business domains:
+- **Tile Management Domain**: Handles tile inventory, categories, and properties
+- **User Management Domain**: Manages authentication, roles, and profiles
+- **Analytics Domain**: Tracks user behavior and tile performance
+- **Visualization Domain**: Handles 3D rendering and room management
+
+#### **Event-Driven Architecture**
+User interactions trigger events that are tracked for analytics:
+- **Tile View Events**: When users view tile details
+- **Tile Application Events**: When users apply tiles to surfaces
+- **QR Scan Events**: When QR codes are scanned
+- **Favorite Events**: When users add/remove favorites
 
 ---
 
 ## 🌐 Multi-Domain System
 
-### **Domain Structure**
+### **Domain Strategy**
 
-The platform uses a sophisticated multi-domain architecture that adapts based on URL paths:
+The platform uses a sophisticated multi-domain approach to provide role-specific experiences:
 
-```
-Production Domains:
-├── customers.yourdomain.com  → Customer Portal
-├── seller.yourdomain.com     → Seller Dashboard  
-└── admin.yourdomain.com      → Admin Panel
+#### **Production Domain Structure**
+- **customers.yourdomain.com**: Public-facing tile showroom for end customers
+- **seller.yourdomain.com**: Private dashboard for tile sellers to manage inventory
+- **admin.yourdomain.com**: Administrative panel for platform management
 
-Development URLs:
-├── localhost:5173/           → Customer Portal
-├── localhost:5173/seller     → Seller Dashboard
-└── localhost:5173/admin      → Admin Panel
-```
-
-### **Domain Configuration**
-
-```typescript
-// src/utils/domainUtils.ts
-export const DOMAIN_CONFIGS: Record<string, DomainConfig> = {
-  'main': {
-    domain: 'main',
-    userType: 'customer',
-    title: 'Tile Showroom - Virtual Showroom',
-    theme: { primary: '#2563eb', secondary: '#1e40af', accent: '#3b82f6' }
-  },
-  'seller': {
-    domain: 'seller',
-    userType: 'seller',
-    title: 'Tile Showroom - Seller Dashboard',
-    theme: { primary: '#059669', secondary: '#047857', accent: '#10b981' }
-  },
-  'admin': {
-    domain: 'admin',
-    userType: 'admin',
-    title: 'Tile Showroom - Admin Panel',
-    theme: { primary: '#7c3aed', secondary: '#6d28d9', accent: '#8b5cf6' }
-  }
-};
-```
+#### **Development Domain Structure**
+For local development, path-based routing is used:
+- **localhost:5173/**: Customer portal (public showroom)
+- **localhost:5173/seller**: Seller dashboard (authentication required)
+- **localhost:5173/admin**: Admin panel (admin authentication required)
 
 ### **Domain-Specific Features**
 
-| Domain | Features | Access Level | Theme Color |
-|--------|----------|--------------|-------------|
-| **Customer** | Tile browsing, 3D visualization, QR scanning | Public + Auth | Blue (#2563eb) |
-| **Seller** | Tile management, analytics, QR generation | Auth Required | Green (#059669) |
-| **Admin** | Platform management, all seller data | Admin Only | Purple (#7c3aed) |
+#### **Customer Portal (customers.yourdomain.com)**
+**Purpose**: Public-facing showroom for tile browsing and visualization
+**Access Level**: Public (no authentication required for browsing)
+**Key Features**:
+- Browse complete tile catalog with search and filtering
+- Interactive 3D room visualization (hall, washroom, kitchen)
+- Apply tiles to different surfaces (floor, wall)
+- QR code scanning integration
+- Guest browsing with optional account creation for favorites
+- Responsive design for all device types
+
+**User Experience Flow**:
+1. Customer visits showroom website
+2. Browses tile catalog with advanced search/filter options
+3. Selects room type for visualization
+4. Chooses tiles and applies them to surfaces
+5. Views realistic 3D preview of applied tiles
+6. Can save favorites (requires account creation)
+
+#### **Seller Dashboard (seller.yourdomain.com)**
+**Purpose**: Business management interface for tile sellers
+**Access Level**: Authenticated sellers only
+**Key Features**:
+- Complete tile inventory management (CRUD operations)
+- Bulk tile upload via CSV import
+- QR code generation and management for physical tiles
+- Detailed analytics dashboard showing tile performance
+- Business profile management
+- Stock level tracking and updates
+
+**Seller Workflow**:
+1. Seller signs in to dashboard
+2. Manages tile inventory (add, edit, delete tiles)
+3. Generates QR codes for physical showroom tiles
+4. Monitors tile performance through analytics
+5. Updates business information and branding
+6. Tracks conversion rates and customer engagement
+
+#### **Admin Panel (admin.yourdomain.com)**
+**Purpose**: Platform administration and oversight
+**Access Level**: Platform administrators only
+**Key Features**:
+- Platform-wide analytics and insights
+- Seller account management and onboarding
+- Cross-seller performance comparisons
+- System health monitoring
+- User role management
+- Revenue and subscription tracking
+
+**Admin Capabilities**:
+1. Monitor all seller activities and performance
+2. Create and manage seller accounts
+3. View platform-wide analytics and trends
+4. Manage system configurations
+5. Handle customer support escalations
+6. Generate business intelligence reports
+
+### **Domain Routing Logic**
+
+The application automatically detects the current domain and renders the appropriate interface:
+
+**Domain Detection Process**:
+1. Parse current URL hostname and path
+2. Match against domain configuration
+3. Apply domain-specific theme and branding
+4. Enforce access control based on user role
+5. Redirect unauthorized users to appropriate domain
+
+**Theme Customization**:
+- **Customer Portal**: Blue theme (#2563eb) - trustworthy and professional
+- **Seller Dashboard**: Green theme (#059669) - growth and business-focused
+- **Admin Panel**: Purple theme (#7c3aed) - authority and control
 
 ---
 
-## 🗄️ Database Schema
+## 🗄️ Database Design
 
-### **Core Tables**
+### **Database Architecture Philosophy**
 
-#### **1. Authentication & Users**
+The database follows a multi-tenant SaaS architecture with strict data isolation:
 
-```sql
--- Built-in Supabase Auth
-auth.users (
-  id uuid PRIMARY KEY,
-  email text,
-  encrypted_password text,
-  email_confirmed_at timestamptz,
-  created_at timestamptz,
-  updated_at timestamptz
-)
+#### **Core Principles**
+- **Data Isolation**: Each seller's data is completely separated using Row Level Security
+- **Scalability**: Designed to handle thousands of sellers and millions of tiles
+- **Performance**: Optimized indexes and queries for fast response times
+- **Security**: Multiple layers of security including RLS, authentication, and encryption
+- **Auditability**: Complete audit trail for all user actions and data changes
 
--- Custom User Profiles
-user_profiles (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid REFERENCES auth.users(id) UNIQUE,
-  email text NOT NULL,
-  full_name text,
-  role text CHECK (role IN ('seller', 'admin')),
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-)
+### **Table Structure Overview**
 
--- Seller Business Information
-tile_sellers (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid REFERENCES auth.users(id) UNIQUE,
-  business_name text NOT NULL,
-  business_address text,
-  phone text,
-  website text,
-  logo_url text,
-  subscription_status text DEFAULT 'active',
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-)
-```
+#### **Authentication & User Management**
+**auth.users (Supabase Built-in)**
+- Handles core authentication functionality
+- Stores encrypted passwords and session management
+- Provides JWT token generation and validation
 
-#### **2. Product Catalog**
+**user_profiles**
+- Extended user information beyond basic auth
+- Role assignment (seller, admin)
+- Profile customization and preferences
+- Links to auth.users via foreign key relationship
 
-```sql
--- Main Tile Inventory
-tiles (
-  id text PRIMARY KEY,
-  name text NOT NULL,
-  image_url text NOT NULL,
-  texture_url text NOT NULL,
-  category text CHECK (category IN ('floor', 'wall', 'both')),
-  size text NOT NULL,
-  price numeric NOT NULL,
-  in_stock boolean DEFAULT true,
-  showroom_id text NOT NULL,
-  seller_id uuid REFERENCES auth.users(id),
-  qr_code text,           -- Base64 QR code image
-  qr_code_url text,       -- QR code access URL
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-)
-```
+**tile_sellers**
+- Business information for tile sellers
+- Company details, contact information, branding
+- Subscription status and billing information
+- Business metrics and performance tracking
 
-#### **3. Analytics & Tracking**
+#### **Product Catalog Management**
+**tiles**
+- Complete tile inventory with detailed specifications
+- Image and texture URLs for 3D rendering
+- Pricing, availability, and categorization
+- QR code storage for physical-digital integration
+- Seller association for multi-tenant data isolation
 
-```sql
--- Raw Analytics Events
-tile_analytics (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  tile_id text NOT NULL,
-  showroom_id text NOT NULL,
-  action_type text CHECK (action_type IN ('view', 'apply')),
-  surface_type text CHECK (surface_type IN ('floor', 'wall')),
-  room_type text CHECK (room_type IN ('hall', 'washroom', 'kitchen')),
-  timestamp timestamptz DEFAULT now(),
-  session_id text,
-  user_agent text
-)
+#### **Analytics & Tracking**
+**tile_analytics**
+- Raw event tracking for all user interactions
+- Granular data including timestamps, user agents, session IDs
+- Action types: views, applications, favorites
+- Surface and room type tracking for detailed insights
 
--- Aggregated Analytics
-tile_analytics_summary (
-  tile_id text PRIMARY KEY,
-  tile_name text NOT NULL,
-  showroom_id text NOT NULL,
-  category text NOT NULL,
-  view_count integer DEFAULT 0,
-  apply_count integer DEFAULT 0,
-  last_viewed timestamptz,
-  last_applied timestamptz,
-  updated_at timestamptz DEFAULT now()
-)
-```
+**tile_analytics_summary**
+- Aggregated analytics data for performance
+- Pre-calculated metrics to avoid expensive real-time calculations
+- Updated automatically via database triggers
+- Optimized for dashboard queries and reporting
 
-### **Database Views**
+#### **Performance Views**
+**most_viewed_tiles**
+- Pre-calculated ranking of tiles by view count
+- Partitioned by showroom for seller-specific insights
+- Updated in real-time as new analytics data arrives
 
-```sql
--- Most Viewed Tiles
-CREATE VIEW most_viewed_tiles AS
-SELECT 
-  tile_id, tile_name, showroom_id, category, view_count, last_viewed,
-  ROW_NUMBER() OVER (PARTITION BY showroom_id ORDER BY view_count DESC) as rank
-FROM tile_analytics_summary
-WHERE view_count > 0;
+**most_tried_tiles**
+- Ranking of tiles by application count
+- Conversion rate calculations
+- Trend analysis for business intelligence
 
--- Most Applied Tiles
-CREATE VIEW most_tried_tiles AS
-SELECT 
-  tile_id, tile_name, showroom_id, category, apply_count, last_applied,
-  ROW_NUMBER() OVER (PARTITION BY showroom_id ORDER BY apply_count DESC) as rank
-FROM tile_analytics_summary
-WHERE apply_count > 0;
-```
+### **Data Relationships**
 
-### **Row Level Security (RLS)**
+#### **Primary Relationships**
+- **Users → Profiles**: One-to-one relationship for extended user data
+- **Users → Sellers**: One-to-one relationship for business information
+- **Sellers → Tiles**: One-to-many relationship for inventory management
+- **Tiles → Analytics**: One-to-many relationship for performance tracking
 
-```sql
--- Sellers can only manage their own tiles
-CREATE POLICY "Sellers can manage own tiles"
-  ON tiles FOR ALL TO authenticated
-  USING (auth.uid() = seller_id);
+#### **Security Relationships**
+- **RLS Policies**: Ensure sellers only see their own data
+- **Role-Based Access**: Different permissions based on user roles
+- **Public Access**: Tiles are publicly viewable for customer browsing
 
--- Admin can access everything
-CREATE POLICY "Admin can manage all tiles"
-  ON tiles FOR ALL TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_profiles 
-      WHERE user_id = auth.uid() AND role = 'admin'
-    )
-  );
+### **Database Security Model**
 
--- Public can view tiles
-CREATE POLICY "Public can view tiles"
-  ON tiles FOR SELECT TO public
-  USING (true);
-```
+#### **Row Level Security (RLS)**
+Every table implements RLS policies to ensure data isolation:
+
+**Seller Data Isolation**:
+- Sellers can only access their own tiles and analytics
+- Complete separation between different seller accounts
+- No cross-contamination of business data
+
+**Admin Oversight**:
+- Administrators have read access to all data
+- Can manage seller accounts and platform settings
+- Cannot modify seller-specific business data without proper authorization
+
+**Public Access**:
+- Tile catalog is publicly accessible for customer browsing
+- Analytics tracking works for anonymous users
+- No sensitive business data exposed to public
 
 ---
 
 ## 🔐 Authentication & Authorization
 
-### **Authentication Flow**
+### **Authentication Strategy**
 
-```mermaid
-graph TD
-    A[User Access] --> B{Domain Check}
-    B -->|Customer| C[Public Access]
-    B -->|Seller/Admin| D[Auth Required]
-    D --> E[Supabase Auth]
-    E --> F{User Exists?}
-    F -->|No| G[Access Denied]
-    F -->|Yes| H[Get User Profile]
-    H --> I{Role Check}
-    I -->|Match| J[Access Granted]
-    I -->|No Match| K[Access Denied]
-```
+The platform implements a sophisticated authentication system with multiple access levels:
 
-### **Role-Based Access Control**
+#### **Authentication Flow**
+1. **Domain Detection**: System identifies which portal user is accessing
+2. **Access Control Check**: Verifies if authentication is required for the domain
+3. **Credential Validation**: Validates user credentials against Supabase Auth
+4. **Profile Retrieval**: Fetches user profile with role information
+5. **Permission Verification**: Confirms user has appropriate role for domain access
+6. **Session Management**: Maintains secure session with automatic token refresh
 
-| Role | Permissions | Access Areas |
-|------|-------------|--------------|
-| **Public** | View tiles, 3D visualization | Customer portal only |
-| **Seller** | Manage own tiles, view own analytics, QR generation | Seller dashboard |
-| **Admin** | Full platform access, manage all sellers, platform analytics | Admin panel + all areas |
+#### **Role-Based Access Control (RBAC)**
 
-### **Authentication Implementation**
+**Seller Role**:
+- Access to seller dashboard only
+- Can manage own tile inventory
+- View own analytics and performance data
+- Generate QR codes for own tiles
+- Update business profile information
 
-```typescript
-// src/lib/supabase.ts
-export const signIn = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email, password
-  });
-  
-  if (error) throw error;
-  
-  // Get user profile with role
-  const userProfile = await getCurrentUser();
-  return { user: data.user, profile: userProfile };
-};
+**Admin Role**:
+- Access to all portals (customer, seller, admin)
+- Platform-wide analytics and insights
+- Seller account management
+- System configuration and settings
+- Cross-seller data analysis
 
-export const getCurrentUser = async (): Promise<UserProfile | null> => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  
-  const { data, error } = await supabase
-    .from('user_profiles')
-    .select('*')
-    .eq('user_id', user.id)
-    .single();
-  
-  if (error) throw error;
-  return data;
-};
-```
+**Public Access**:
+- Customer portal browsing without authentication
+- 3D visualization and tile application
+- QR code scanning and tile viewing
+- Limited functionality without account
 
-### **Domain Guard Component**
+### **Security Implementation**
 
-```typescript
-// src/components/DomainGuard.tsx
-export const DomainGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const domainConfig = getCurrentDomainConfig();
-  const hasAccess = canAccessDomain(currentUser?.role, domainConfig);
-  
-  if (!hasAccess) {
-    return <AccessRestrictedScreen />;
-  }
-  
-  return <>{children}</>;
-};
-```
+#### **Database Security**
+- **Row Level Security**: Database-level access control
+- **Encrypted Connections**: All database communications encrypted
+- **JWT Tokens**: Secure token-based authentication
+- **Session Management**: Automatic token refresh and expiration
+
+#### **Application Security**
+- **Domain Validation**: Prevents unauthorized domain access
+- **Input Sanitization**: All user inputs validated and sanitized
+- **XSS Protection**: Content Security Policy and input encoding
+- **CSRF Protection**: Token-based request validation
+
+#### **API Security**
+- **Rate Limiting**: Prevents abuse and ensures fair usage
+- **Request Validation**: All API requests validated against schema
+- **Error Handling**: Secure error messages without sensitive data exposure
+- **Audit Logging**: Complete audit trail for all API operations
 
 ---
 
-## 🎨 Frontend Components
+## 💻 Frontend Application
 
-### **Component Architecture**
+### **Application Structure**
 
-```
-src/components/
-├── Auth/
-│   ├── AuthModal.tsx           # Sign in/up modal
-│   └── ProtectedRoute.tsx      # Route protection
-├── 3D/
-│   ├── Room3D.tsx             # Main 3D room component
-│   ├── TileApplication.tsx    # Tile application interface
-│   └── RoomSelector.tsx       # Room type selection
-├── Dashboard/
-│   ├── AdminDashboard.tsx     # Admin panel main
-│   ├── SellerDashboard.tsx    # Seller dashboard main
-│   └── AnalyticsDashboard.tsx # Analytics display
-├── Tiles/
-│   ├── TileCard.tsx           # Individual tile display
-│   ├── TileCatalog.tsx        # Tile grid with search
-│   └── TileDetails.tsx        # Detailed tile view
-├── QR/
-│   ├── QRCodeManager.tsx      # QR code generation
-│   └── QRCodeDisplay.tsx      # QR code display
-├── Common/
-│   ├── DomainHeader.tsx       # Domain-specific header
-│   ├── DomainGuard.tsx        # Access control
-│   └── LoadingSpinner.tsx     # Loading states
-└── Upload/
-    ├── BulkUpload.tsx         # CSV bulk upload
-    └── FileUpload.tsx         # Single file upload
-```
+The frontend is built as a Single Page Application (SPA) with multiple distinct interfaces:
 
-### **Key Component Details**
+#### **Component Architecture**
 
-#### **1. Room3D Component**
+**Atomic Design Principles**:
+- **Atoms**: Basic UI elements (buttons, inputs, icons)
+- **Molecules**: Simple component combinations (search bars, tile cards)
+- **Organisms**: Complex UI sections (headers, dashboards, catalogs)
+- **Templates**: Page layouts and structures
+- **Pages**: Complete page implementations
 
-```typescript
-// 3D Room Visualization
-export const Room3D: React.FC = () => {
-  const { selectedRoom, appliedTiles, currentShowroom } = useAppStore();
-  
-  const renderRoom = () => {
-    switch (selectedRoom.type) {
-      case 'hall': return <HallRoom floorTexture={getTexture('floor')} />;
-      case 'washroom': return <WashroomScene floorTexture={...} wallTexture={...} />;
-      case 'kitchen': return <KitchenScene floorTexture={...} wallTexture={...} />;
-    }
-  };
-  
-  return (
-    <Canvas camera={{ position: [0, 0, 0], fov: 75 }}>
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[5, 5, 5]} intensity={0.6} />
-      {renderRoom()}
-      <OrbitControls enablePan enableZoom enableRotate />
-      <Environment preset="apartment" />
-    </Canvas>
-  );
-};
-```
+**Component Categories**:
 
-#### **2. TileApplication Component**
+**Common Components**:
+- Domain-specific headers with role-based navigation
+- Loading states and error boundaries
+- Modal dialogs and notifications
+- Form components with validation
 
-```typescript
-// Tile Application Interface
-export const TileApplication: React.FC = () => {
-  const { selectedTile, selectedRoom, appliedTiles, applyTileToSurface } = useAppStore();
-  
-  const handleApplyTile = (surface: string) => {
-    if (selectedTile && selectedRoom) {
-      applyTileToSurface(surface, selectedTile.id);
-      trackTileApplication(selectedTile.id, currentShowroom.id, surface, selectedRoom.type);
-    }
-  };
-  
-  const surfaces = selectedRoom.type === 'hall' ? ['floor'] : ['floor', 'wall'];
-  
-  return (
-    <div className="space-y-4">
-      {surfaces.map(surface => (
-        <SurfaceApplicationButton 
-          key={surface}
-          surface={surface}
-          canApply={canApplyToSurface(surface)}
-          onApply={() => handleApplyTile(surface)}
-        />
-      ))}
-    </div>
-  );
-};
-```
+**Authentication Components**:
+- Sign-in/sign-up modals with role selection
+- Protected route wrappers
+- User profile management
+- Session management utilities
 
-#### **3. SellerDashboard Component**
+**Tile Management Components**:
+- Tile catalog with search and filtering
+- Individual tile cards with detailed information
+- Tile upload and editing forms
+- Bulk upload interface with CSV processing
 
-```typescript
-// Seller Dashboard Main Interface
-export const SellerDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'tiles' | 'bulk' | 'analytics' | 'qrcodes'>('tiles');
-  
-  return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-      
-      {activeTab === 'tiles' && <TileManagement />}
-      {activeTab === 'bulk' && <BulkUpload />}
-      {activeTab === 'analytics' && <AnalyticsDashboard sellerId={currentUser?.user_id} />}
-      {activeTab === 'qrcodes' && <QRCodeManager tiles={sellerTiles} />}
-    </div>
-  );
-};
-```
+**3D Visualization Components**:
+- Room selector with preview thumbnails
+- 3D scene renderer with lighting and controls
+- Tile application interface with surface selection
+- Camera controls and view management
 
-### **State Management**
+**Dashboard Components**:
+- Analytics charts and metrics
+- Performance summaries and KPIs
+- Data tables with sorting and filtering
+- Export functionality for reports
 
-```typescript
-// src/stores/appStore.ts - Zustand Store
-interface AppState {
-  currentShowroom: Showroom | null;
-  selectedTile: Tile | null;
-  selectedRoom: Room | null;
-  appliedTiles: Record<string, string>;
-  currentUser: UserProfile | null;
-  isAuthenticated: boolean;
-  favorites: string[];
-  
-  // Actions
-  setCurrentShowroom: (showroom: Showroom) => void;
-  setSelectedTile: (tile: Tile | null) => void;
-  applyTileToSurface: (surface: string, tileId: string) => void;
-  // ... more actions
-}
+**QR Code Components**:
+- QR code generation interface
+- Bulk QR code management
+- Download and printing utilities
+- QR code preview and validation
 
-export const useAppStore = create<AppState>((set) => ({
-  // Initial state
-  currentShowroom: null,
-  selectedTile: null,
-  // ... other initial values
-  
-  // Actions
-  setSelectedTile: (tile) => set({ selectedTile: tile }),
-  applyTileToSurface: (surface, tileId) => 
-    set((state) => ({
-      appliedTiles: { ...state.appliedTiles, [surface]: tileId }
-    })),
-  // ... other actions
-}));
-```
+### **State Management Strategy**
+
+#### **Global State (Zustand)**
+- **Current User**: Authentication state and user profile
+- **Selected Showroom**: Active showroom data and configuration
+- **Tile Selection**: Currently selected tile for visualization
+- **Room Configuration**: Selected room type and applied tiles
+- **Favorites**: User's favorite tiles (for authenticated users)
+
+#### **Local Component State**
+- **Form Data**: Temporary form inputs and validation states
+- **UI State**: Modal visibility, loading states, error messages
+- **Interaction State**: Hover effects, selection states, animation triggers
+
+#### **Server State (Supabase)**
+- **Tile Catalog**: Real-time tile inventory data
+- **Analytics Data**: Performance metrics and tracking information
+- **User Profiles**: Authentication and role information
+- **Business Data**: Seller profiles and configuration
+
+### **Responsive Design Strategy**
+
+#### **Breakpoint System**
+- **Mobile**: 320px - 768px (single column layouts, touch-optimized)
+- **Tablet**: 768px - 1024px (two-column layouts, hybrid interactions)
+- **Desktop**: 1024px+ (multi-column layouts, mouse-optimized)
+
+#### **Mobile-First Approach**
+- Base styles designed for mobile devices
+- Progressive enhancement for larger screens
+- Touch-friendly interface elements
+- Optimized performance for mobile networks
+
+#### **Cross-Device Consistency**
+- Consistent color schemes and typography
+- Unified interaction patterns
+- Synchronized user data across devices
+- Responsive 3D visualization
 
 ---
 
@@ -547,115 +474,42 @@ export const useAppStore = create<AppState>((set) => ({
 
 ### **Supabase Integration**
 
-```typescript
-// src/lib/supabase.ts - Main Supabase Client
-import { createClient } from '@supabase/supabase-js';
+#### **Database Services**
+- **PostgreSQL Database**: Robust relational database with advanced features
+- **Real-time Subscriptions**: Live data updates without polling
+- **Automatic API Generation**: REST and GraphQL APIs generated from schema
+- **Database Functions**: Custom business logic executed in database
 
-export const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+#### **Authentication Services**
+- **User Management**: Complete user lifecycle management
+- **JWT Tokens**: Secure, stateless authentication
+- **Role-Based Access**: Fine-grained permission control
+- **Session Management**: Automatic token refresh and expiration
 
-// Tile Management
-export const uploadTile = async (tileData: any) => {
-  const { data, error } = await supabase
-    .from('tiles')
-    .insert(tileData)
-    .select()
-    .single();
-  
-  if (error) throw error;
-  return data;
-};
+#### **Storage Services**
+- **File Upload**: Secure file storage for images and documents
+- **CDN Integration**: Fast content delivery worldwide
+- **Image Optimization**: Automatic image resizing and compression
 
-export const updateTile = async (tileId: string, updates: any) => {
-  const { data, error } = await supabase
-    .from('tiles')
-    .update(updates)
-    .eq('id', tileId)
-    .select()
-    .single();
-  
-  if (error) throw error;
-  return data;
-};
+### **API Design Philosophy**
 
-// Analytics Tracking
-export const trackTileView = async (tileId: string, showroomId: string) => {
-  const { error } = await supabase
-    .from('tile_analytics')
-    .insert({
-      tile_id: tileId,
-      showroom_id: showroomId,
-      action_type: 'view',
-      timestamp: new Date().toISOString()
-    });
-  
-  if (error) console.error('Error tracking tile view:', error);
-};
+#### **RESTful Principles**
+- **Resource-Based URLs**: Clear, predictable endpoint structure
+- **HTTP Methods**: Proper use of GET, POST, PUT, DELETE
+- **Status Codes**: Meaningful HTTP status codes for all responses
+- **Consistent Response Format**: Standardized JSON response structure
 
-export const trackTileApplication = async (
-  tileId: string, 
-  showroomId: string, 
-  surface: string, 
-  roomType: string
-) => {
-  const { error } = await supabase
-    .from('tile_analytics')
-    .insert({
-      tile_id: tileId,
-      showroom_id: showroomId,
-      action_type: 'apply',
-      surface_type: surface,
-      room_type: roomType,
-      timestamp: new Date().toISOString()
-    });
-  
-  if (error) console.error('Error tracking tile application:', error);
-};
-```
+#### **Error Handling Strategy**
+- **Graceful Degradation**: Application continues to function with limited features
+- **User-Friendly Messages**: Clear, actionable error messages for users
+- **Developer Information**: Detailed error logs for debugging
+- **Retry Mechanisms**: Automatic retry for transient failures
 
-### **Database Functions & Triggers**
-
-```sql
--- Auto-update analytics summary
-CREATE OR REPLACE FUNCTION update_tile_analytics_summary()
-RETURNS TRIGGER AS $$
-BEGIN
-  INSERT INTO tile_analytics_summary (tile_id, tile_name, showroom_id, category, view_count, apply_count)
-  SELECT 
-    t.id, t.name, t.showroom_id, t.category,
-    COALESCE(views.count, 0),
-    COALESCE(applies.count, 0)
-  FROM tiles t
-  LEFT JOIN (
-    SELECT tile_id, COUNT(*) as count
-    FROM tile_analytics 
-    WHERE action_type = 'view' AND tile_id = NEW.tile_id
-    GROUP BY tile_id
-  ) views ON t.id = views.tile_id
-  LEFT JOIN (
-    SELECT tile_id, COUNT(*) as count
-    FROM tile_analytics 
-    WHERE action_type = 'apply' AND tile_id = NEW.tile_id
-    GROUP BY tile_id
-  ) applies ON t.id = applies.tile_id
-  WHERE t.id = NEW.tile_id
-  ON CONFLICT (tile_id) DO UPDATE SET
-    view_count = EXCLUDED.view_count,
-    apply_count = EXCLUDED.apply_count,
-    updated_at = now();
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger for analytics updates
-CREATE TRIGGER update_analytics_summary_trigger
-  AFTER INSERT ON tile_analytics
-  FOR EACH ROW
-  EXECUTE FUNCTION update_tile_analytics_summary();
-```
+#### **Performance Optimization**
+- **Query Optimization**: Efficient database queries with proper indexing
+- **Caching Strategy**: Strategic caching of frequently accessed data
+- **Pagination**: Large datasets split into manageable chunks
+- **Compression**: Response compression for faster data transfer
 
 ---
 
@@ -663,1069 +517,1381 @@ CREATE TRIGGER update_analytics_summary_trigger
 
 ### **Mobile App Architecture**
 
-```
-mobile-app/
-├── src/
-│   ├── screens/
-│   │   ├── HomeScreen.tsx         # Tile catalog
-│   │   ├── QRScannerScreen.tsx    # QR code scanning
-│   │   ├── TileViewScreen.tsx     # Tile details
-│   │   ├── Room3DScreen.tsx       # 3D visualization
-│   │   ├── FavoritesScreen.tsx    # User favorites
-│   │   └── ProfileScreen.tsx      # User profile
-│   ├── context/
-│   │   ├── AuthContext.tsx        # Authentication
-│   │   └── TileContext.tsx        # Tile state
-│   ├── services/
-│   │   └── supabase.ts           # Supabase client
-│   └── components/
-├── App.tsx                       # Main app component
-├── app.json                      # Expo configuration
-└── package.json                  # Dependencies
-```
+#### **Navigation Structure**
+The mobile app uses tab-based navigation with stack navigation for detailed views:
 
-### **Key Mobile Features**
+**Main Tabs**:
+- **Home**: Tile catalog browsing and search
+- **Scanner**: QR code scanning functionality
+- **Favorites**: User's saved tiles (requires authentication)
+- **Profile**: User account management and settings
 
-#### **1. QR Code Scanner**
+**Stack Navigation**:
+- **Tile Details**: Detailed tile information and application
+- **3D Room View**: Immersive 3D visualization
+- **Authentication**: Sign-in/sign-up flows
 
-```typescript
-// QR Scanner Implementation
-import { BarCodeScanner } from 'expo-barcode-scanner';
+#### **Key Mobile Features**
 
-const QRScannerScreen = ({ navigation }: any) => {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [scanned, setScanned] = useState(false);
+**QR Code Scanning**:
+- **Camera Integration**: Native camera access for QR scanning
+- **Real-time Detection**: Instant QR code recognition and processing
+- **Error Handling**: Graceful handling of invalid or corrupted QR codes
+- **Flash Control**: Toggle flash for low-light scanning
+- **Scan History**: Track previously scanned tiles
 
-  const handleBarCodeScanned = async ({ data }: { data: string }) => {
-    setScanned(true);
-    
-    const qrData = parseQRData(data);
-    if (!qrData) {
-      Alert.alert('Invalid QR Code', 'This QR code is not from our system.');
-      return;
-    }
+**3D Visualization**:
+- **Mobile-Optimized Rendering**: Efficient 3D rendering for mobile GPUs
+- **Touch Controls**: Intuitive pinch-to-zoom and drag-to-rotate
+- **Performance Optimization**: Reduced polygon counts and texture sizes
+- **Battery Efficiency**: Optimized rendering loops to preserve battery life
 
-    // Fetch tile data and navigate
-    const tile = await getTileById(qrData.tileId, qrData.showroomId);
-    if (tile) {
-      await trackTileView(tile.id, tile.showroom_id);
-      navigation.navigate('TileView', { tile, fromQR: true });
-    }
-  };
+**Offline Capabilities**:
+- **Tile Caching**: Cache frequently viewed tiles for offline access
+- **Sync on Reconnect**: Synchronize data when connection is restored
+- **Offline Indicators**: Clear indication of offline status
+- **Progressive Loading**: Load essential content first, details later
 
-  return (
-    <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={styles.scanner}
-      />
-      {/* Scanner overlay and controls */}
-    </View>
-  );
-};
-```
+### **Mobile-Specific Considerations**
 
-#### **2. 3D Room Visualization**
+#### **Performance Optimization**
+- **Lazy Loading**: Load components and data only when needed
+- **Image Optimization**: Compressed images optimized for mobile networks
+- **Memory Management**: Efficient memory usage for 3D scenes
+- **Network Efficiency**: Minimize data usage with smart caching
 
-```typescript
-// Mobile 3D Room Component
-import { GLView } from 'expo-gl';
-import { Renderer } from 'expo-three';
-import * as THREE from 'three';
-
-const Room3DScreen = ({ navigation }: any) => {
-  const onContextCreate = async (gl: any) => {
-    const renderer = new Renderer({ gl });
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    
-    // Create room based on selected room type
-    await createRoom(scene);
-    
-    // Animation loop
-    const animate = () => {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-      gl.endFrameEXP();
-    };
-    animate();
-  };
-
-  return (
-    <View style={styles.container}>
-      <GLView style={styles.glView} onContextCreate={onContextCreate} />
-    </View>
-  );
-};
-```
-
-### **Mobile App Configuration**
-
-```json
-// app.json - Expo Configuration
-{
-  "expo": {
-    "name": "Tile Showroom 3D",
-    "slug": "tile-showroom-3d",
-    "version": "1.0.1",
-    "platforms": ["ios", "android"],
-    "permissions": ["CAMERA"],
-    "plugins": [
-      ["expo-barcode-scanner", {
-        "cameraPermission": "Allow camera access for QR code scanning."
-      }]
-    ]
-  }
-}
-```
+#### **User Experience**
+- **Touch-Friendly Interface**: Large touch targets and intuitive gestures
+- **Loading States**: Clear feedback during data loading and processing
+- **Error Recovery**: Easy recovery from network errors or failures
+- **Accessibility**: Support for screen readers and accessibility features
 
 ---
 
 ## 🎮 3D Visualization System
 
-### **3D Architecture**
+### **3D Engine Architecture**
 
-```typescript
-// 3D Room Components
-const HallRoom: React.FC<{ floorTileTexture?: string }> = ({ floorTileTexture }) => {
-  let floorTexture = null;
-  if (floorTileTexture) {
-    floorTexture = useLoader(THREE.TextureLoader, floorTileTexture);
-    floorTexture.wrapS = THREE.RepeatWrapping;
-    floorTexture.wrapT = THREE.RepeatWrapping;
-    floorTexture.repeat.set(8, 8);
-  }
+#### **Rendering Pipeline**
+1. **Scene Setup**: Initialize 3D scene with lighting and camera
+2. **Geometry Creation**: Build room geometry (walls, floor, ceiling)
+3. **Texture Loading**: Load and apply tile textures to surfaces
+4. **Lighting Calculation**: Realistic lighting for material visualization
+5. **Render Loop**: Continuous rendering with user interaction handling
 
-  return (
-    <group>
-      {/* Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3, 0]}>
-        <planeGeometry args={[12, 12]} />
-        <meshStandardMaterial 
-          map={floorTexture} 
-          color={floorTexture ? 'white' : '#e5e5e5'}
-        />
-      </mesh>
-      
-      {/* Walls */}
-      <mesh position={[0, 0, -6]}>
-        <planeGeometry args={[12, 6]} />
-        <meshStandardMaterial color="#f5f5f5" />
-      </mesh>
-      
-      {/* Furniture */}
-      <Sofa />
-      <CoffeeTable />
-    </group>
-  );
-};
+#### **Room Types and Specifications**
 
-// Washroom with floor and wall tiles
-const WashroomScene: React.FC<{ 
-  floorTileTexture?: string, 
-  wallTileTexture?: string 
-}> = ({ floorTileTexture, wallTileTexture }) => {
-  // Load textures
-  const floorTexture = floorTileTexture ? 
-    useLoader(THREE.TextureLoader, floorTileTexture) : null;
-  const wallTexture = wallTileTexture ? 
-    useLoader(THREE.TextureLoader, wallTileTexture) : null;
+**Living Hall**:
+- **Dimensions**: 12m x 12m x 6m (length x width x height)
+- **Surfaces**: Floor only (walls are decorative)
+- **Furniture**: Sofa, coffee table, entertainment center
+- **Lighting**: Ambient lighting with directional sunlight simulation
+- **Use Case**: Large format floor tiles, luxury materials
 
-  return (
-    <group>
-      {/* Floor with tile texture */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.5, 0]}>
-        <planeGeometry args={[8, 8]} />
-        <meshStandardMaterial map={floorTexture} />
-      </mesh>
-      
-      {/* Walls with tile texture */}
-      {[
-        { pos: [0, 0, -4], rot: [0, 0, 0] },
-        { pos: [-4, 0, 0], rot: [0, Math.PI / 2, 0] },
-        { pos: [4, 0, 0], rot: [0, -Math.PI / 2, 0] },
-        { pos: [0, 0, 4], rot: [0, Math.PI, 0] }
-      ].map(({ pos, rot }, index) => (
-        <mesh key={index} position={pos} rotation={rot}>
-          <planeGeometry args={[8, 5]} />
-          <meshStandardMaterial map={wallTexture} />
-        </mesh>
-      ))}
-      
-      {/* Bathroom fixtures */}
-      <Toilet />
-      <Sink />
-    </group>
-  );
-};
-```
+**Washroom**:
+- **Dimensions**: 8m x 8m x 5m
+- **Surfaces**: Floor and walls (both can have tiles applied)
+- **Fixtures**: Toilet, sink, mirror, shower area
+- **Lighting**: Bright, even lighting for accurate color representation
+- **Use Case**: Ceramic tiles, waterproof materials, small format tiles
 
-### **3D Room Types**
+**Kitchen**:
+- **Dimensions**: 10m x 10m x 5m
+- **Surfaces**: Floor and walls (backsplash area)
+- **Fixtures**: Counters, cabinets, refrigerator, stove
+- **Lighting**: Task lighting with under-cabinet illumination
+- **Use Case**: Backsplash tiles, durable floor materials, easy-clean surfaces
 
-| Room Type | Surfaces | Furniture/Fixtures | Lighting |
-|-----------|----------|-------------------|----------|
-| **Hall** | Floor only | Sofa, Coffee table, TV stand | Ambient + directional |
-| **Washroom** | Floor + Walls | Toilet, Sink, Mirror | Bright white lighting |
-| **Kitchen** | Floor + Walls | Counter, Refrigerator, Cabinets | Task lighting |
+#### **3D Interaction System**
 
-### **Texture Loading & Optimization**
+**Camera Controls**:
+- **Orbit Controls**: Rotate around room center point
+- **Zoom Limits**: Prevent extreme zoom levels that break immersion
+- **Pan Restrictions**: Keep camera within reasonable bounds
+- **Smooth Transitions**: Animated camera movements for better UX
 
-```typescript
-// Texture management
-const useTextureLoader = (url: string | null) => {
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
-  
-  useEffect(() => {
-    if (!url) return;
-    
-    const loader = new THREE.TextureLoader();
-    loader.load(
-      url,
-      (loadedTexture) => {
-        loadedTexture.wrapS = THREE.RepeatWrapping;
-        loadedTexture.wrapT = THREE.RepeatWrapping;
-        loadedTexture.repeat.set(4, 4);
-        setTexture(loadedTexture);
-      },
-      undefined,
-      (error) => console.error('Texture loading error:', error)
-    );
-  }, [url]);
-  
-  return texture;
-};
-```
+**Tile Application Process**:
+1. **Surface Selection**: User selects floor or wall surface
+2. **Compatibility Check**: Verify tile category matches surface type
+3. **Texture Application**: Apply tile texture to selected surface
+4. **Real-time Preview**: Immediate visual feedback of applied tile
+5. **Analytics Tracking**: Record tile application for business intelligence
+
+#### **Performance Optimization**
+
+**Rendering Optimization**:
+- **Level of Detail (LOD)**: Reduce geometry complexity based on camera distance
+- **Texture Compression**: Optimize texture sizes for web delivery
+- **Frustum Culling**: Only render objects visible to camera
+- **Batching**: Combine similar objects to reduce draw calls
+
+**Memory Management**:
+- **Texture Pooling**: Reuse textures across multiple objects
+- **Geometry Instancing**: Share geometry between similar objects
+- **Garbage Collection**: Proper cleanup of 3D objects and textures
+- **Progressive Loading**: Load high-resolution assets progressively
 
 ---
 
 ## 📱 QR Code System
 
-### **QR Code Generation**
+### **QR Code Strategy**
 
-```typescript
-// src/utils/qrCodeUtils.ts
-import QRCode from 'qrcode';
+The QR code system creates a seamless bridge between physical tiles in showrooms and digital 3D experiences:
 
-export const generateTileQRCode = async (tile: Tile): Promise<string> => {
-  const baseUrl = window.location.origin;
-  const qrData = {
-    type: 'tile',
-    tileId: tile.id,
-    showroomId: tile.showroomId,
-    webUrl: `${baseUrl}?tile=${tile.id}&showroom=${tile.showroomId}`,
-    mobileData: {
-      tileId: tile.id,
-      showroomId: tile.showroomId,
-      tileName: tile.name,
-      category: tile.category,
-      size: tile.size,
-      price: tile.price
-    }
-  };
+#### **QR Code Data Structure**
+Each QR code contains comprehensive information:
+- **Tile Identification**: Unique tile ID and showroom association
+- **Web Integration**: Direct URL for web browser access
+- **Mobile Integration**: Structured data for mobile app processing
+- **Metadata**: Tile name, category, size, and pricing information
 
-  const qrCodeDataUrl = await QRCode.toDataURL(JSON.stringify(qrData), {
-    width: 300,
-    margin: 2,
-    color: { dark: '#000000', light: '#FFFFFF' },
-    errorCorrectionLevel: 'M'
-  });
+#### **QR Code Generation Process**
 
-  return qrCodeDataUrl;
-};
-```
+**Individual QR Generation**:
+1. **Data Compilation**: Gather tile information and create structured data object
+2. **URL Generation**: Create web-accessible URL with tile parameters
+3. **QR Encoding**: Generate QR code image with error correction
+4. **Database Storage**: Store QR code data in tile record
+5. **Validation**: Verify QR code can be properly decoded
 
-### **Bulk QR Code Generation**
+**Bulk QR Generation**:
+1. **Batch Processing**: Process multiple tiles simultaneously
+2. **Progress Tracking**: Real-time progress updates for large batches
+3. **Error Handling**: Continue processing even if individual tiles fail
+4. **Package Creation**: Generate ZIP file with all QR codes and documentation
+5. **Download Management**: Provide secure download links for generated packages
 
-```typescript
-// Generate QR codes for multiple tiles
-export const generateBulkQRCodes = async (tiles: Tile[]): Promise<{ [tileId: string]: string }> => {
-  const qrCodes: { [tileId: string]: string } = {};
-  
-  for (const tile of tiles) {
-    try {
-      qrCodes[tile.id] = await generateTileQRCode(tile);
-    } catch (error) {
-      console.error(`Error generating QR code for tile ${tile.id}:`, error);
-    }
-  }
-  
-  return qrCodes;
-};
+#### **QR Code Package Contents**
 
-// Download QR codes as ZIP
-export const downloadQRCodesAsZip = async (tiles: Tile[], businessName: string) => {
-  const zip = new JSZip();
-  const qrFolder = zip.folder('QR_Codes');
-  
-  // Generate CSV with tile information
-  const csvContent = [
-    'Tile ID,Tile Name,Category,Size,Price,QR Code File',
-    ...tiles.map(tile => 
-      `"${tile.id}","${tile.name}","${tile.category}","${tile.size}","${tile.price}","${tile.id}_qr.png"`
-    )
-  ].join('\n');
-  
-  zip.file('tile_qr_codes_list.csv', csvContent);
-  
-  // Add instructions
-  const instructions = `
-QR Code Instructions for ${businessName}
+**For Sellers**:
+- **Individual PNG Files**: High-resolution QR code for each tile
+- **CSV Inventory List**: Complete tile information with QR code file mapping
+- **Installation Instructions**: Step-by-step guide for physical implementation
+- **Best Practices Guide**: Recommendations for QR code placement and sizing
 
-How to use:
-1. Print each QR code (recommended size: 2x2 inches minimum)
-2. Attach the QR code to the corresponding tile in your showroom
-3. Customers can scan with any QR code reader or your mobile app
-4. The QR code will show the tile in 3D visualization
+**Physical Implementation**:
+- **Recommended Size**: Minimum 2x2 inches for reliable scanning
+- **Placement Strategy**: Visible location on tile or nearby signage
+- **Material Considerations**: Laminated or weather-resistant printing
+- **Lighting Requirements**: Adequate lighting for mobile camera scanning
 
-Generated on: ${new Date().toLocaleDateString()}
-  `.trim();
-  
-  zip.file('README.txt', instructions);
-  
-  // Generate QR codes for each tile
-  for (const tile of tiles) {
-    const qrCodeDataUrl = await generateTileQRCode(tile);
-    const base64Data = qrCodeDataUrl.split(',')[1];
-    qrFolder?.file(`${tile.id}_qr.png`, base64Data, { base64: true });
-  }
-  
-  // Download ZIP
-  const zipBlob = await zip.generateAsync({ type: 'blob' });
-  const fileName = `${businessName.replace(/[^a-zA-Z0-9]/g, '_')}_QR_Codes_${new Date().toISOString().split('T')[0]}.zip`;
-  saveAs(zipBlob, fileName);
-};
-```
+### **QR Code Scanning Workflow**
 
-### **QR Code Workflow**
+#### **Mobile App Scanning**:
+1. **Camera Activation**: Request camera permissions and initialize scanner
+2. **QR Detection**: Real-time QR code detection and validation
+3. **Data Parsing**: Extract and validate tile information from QR data
+4. **Database Query**: Fetch complete tile information from database
+5. **3D Loading**: Load tile into 3D visualization system
+6. **Analytics Tracking**: Record scan event for business intelligence
 
-```mermaid
-graph TD
-    A[Seller Uploads Tile] --> B[Generate QR Code]
-    B --> C[Store QR in Database]
-    C --> D[Print QR Code]
-    D --> E[Attach to Physical Tile]
-    E --> F[Customer Scans QR]
-    F --> G[Parse QR Data]
-    G --> H[Fetch Tile from Database]
-    H --> I[Display in 3D]
-    I --> J[Track Analytics]
-```
+#### **Web Browser Scanning**:
+1. **QR Code Scan**: User scans with any QR code reader app
+2. **URL Redirect**: QR code contains direct URL to web application
+3. **Parameter Processing**: Extract tile and showroom IDs from URL
+4. **Automatic Loading**: Web app automatically loads and displays tile
+5. **Seamless Experience**: No additional steps required from user
 
 ---
 
 ## 📊 Analytics & Tracking
 
-### **Analytics Data Flow**
+### **Analytics Philosophy**
 
-```typescript
-// Analytics tracking functions
-export const trackTileView = async (tileId: string, showroomId: string) => {
-  const { error } = await supabase
-    .from('tile_analytics')
-    .insert({
-      tile_id: tileId,
-      showroom_id: showroomId,
-      action_type: 'view',
-      timestamp: new Date().toISOString(),
-      session_id: generateSessionId(),
-      user_agent: navigator.userAgent
-    });
-  
-  if (error) console.error('Error tracking tile view:', error);
-};
+The analytics system provides comprehensive insights into customer behavior and tile performance:
 
-export const trackTileApplication = async (
-  tileId: string, 
-  showroomId: string, 
-  surface: string, 
-  roomType: string
-) => {
-  const { error } = await supabase
-    .from('tile_analytics')
-    .insert({
-      tile_id: tileId,
-      showroom_id: showroomId,
-      action_type: 'apply',
-      surface_type: surface,
-      room_type: roomType,
-      timestamp: new Date().toISOString()
-    });
-  
-  if (error) console.error('Error tracking tile application:', error);
-};
-```
+#### **Data Collection Strategy**
 
-### **Analytics Dashboard**
+**Event-Driven Tracking**:
+- **Tile Views**: Track when customers view tile details
+- **Tile Applications**: Record when tiles are applied to surfaces
+- **QR Scans**: Monitor QR code usage and effectiveness
+- **Session Analytics**: Track user journey and engagement patterns
 
-```typescript
-// Analytics Dashboard Component
-export const AnalyticsDashboard: React.FC<{ sellerId?: string }> = ({ sellerId }) => {
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData[]>([]);
-  const [mostViewed, setMostViewed] = useState<any[]>([]);
-  const [mostTried, setMostTried] = useState<any[]>([]);
+**Privacy-Conscious Approach**:
+- **Anonymous Tracking**: No personal data collection for public users
+- **Opt-in Analytics**: Authenticated users can control data sharing
+- **Data Minimization**: Collect only necessary data for business insights
+- **Retention Policies**: Automatic cleanup of old analytics data
 
-  useEffect(() => {
-    loadAnalytics();
-  }, []);
+#### **Analytics Dashboard Features**
 
-  const loadAnalytics = async () => {
-    const [analytics, viewed, tried] = await Promise.all([
-      getTileAnalytics(showroomId),
-      getMostViewedTiles(showroomId, 10),
-      getMostTriedTiles(showroomId, 10)
-    ]);
-    
-    setAnalyticsData(analytics || []);
-    setMostViewed(viewed || []);
-    setMostTried(tried || []);
-  };
+**Seller Analytics**:
+- **Tile Performance**: Views, applications, and conversion rates for each tile
+- **Trend Analysis**: Performance over time with seasonal patterns
+- **Surface Preferences**: Which surfaces (floor/wall) are most popular
+- **Room Type Analysis**: Performance by room type (hall, washroom, kitchen)
+- **QR Code Effectiveness**: Scan rates and conversion from QR codes
 
-  const totalViews = analyticsData.reduce((sum, item) => sum + item.view_count, 0);
-  const totalApplications = analyticsData.reduce((sum, item) => sum + item.apply_count, 0);
-  const conversionRate = totalViews > 0 ? ((totalApplications / totalViews) * 100).toFixed(1) : '0';
+**Admin Analytics**:
+- **Platform Overview**: Total users, tiles, and engagement across all sellers
+- **Seller Comparison**: Performance benchmarking between different sellers
+- **Market Insights**: Popular tile categories and pricing trends
+- **Growth Metrics**: User acquisition and retention statistics
+- **Revenue Analytics**: Subscription performance and platform growth
 
-  return (
-    <div className="space-y-6">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <MetricCard title="Total Views" value={totalViews} icon={<Eye />} color="blue" />
-        <MetricCard title="Applications" value={totalApplications} icon={<MousePointer />} color="green" />
-        <MetricCard title="Conversion Rate" value={`${conversionRate}%`} icon={<TrendingUp />} color="purple" />
-        <MetricCard title="Active Tiles" value={analyticsData.length} icon={<BarChart3 />} color="orange" />
-      </div>
+#### **Key Performance Indicators (KPIs)**
 
-      {/* Charts and detailed analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <MostViewedTiles tiles={mostViewed} />
-        <MostTriedTiles tiles={mostTried} />
-      </div>
-    </div>
-  );
-};
-```
+**Customer Engagement**:
+- **View-to-Application Rate**: Percentage of tile views that result in applications
+- **Session Duration**: Average time spent in 3D visualization
+- **Return Visitor Rate**: Percentage of users who return to the platform
+- **QR Scan Conversion**: Effectiveness of QR code to purchase funnel
 
-### **Analytics Metrics**
+**Business Performance**:
+- **Tile Popularity Rankings**: Most viewed and applied tiles
+- **Seller Performance**: Revenue and engagement by seller
+- **Category Performance**: Success rates by tile category
+- **Seasonal Trends**: Performance variations throughout the year
 
-| Metric | Description | Calculation |
-|--------|-------------|-------------|
-| **Views** | Number of times a tile is viewed | Count of 'view' events |
-| **Applications** | Number of times a tile is applied to a surface | Count of 'apply' events |
-| **Conversion Rate** | Percentage of views that result in applications | (Applications / Views) × 100 |
-| **Popular Surfaces** | Most used surfaces (floor/wall) | Group by surface_type |
-| **Room Preferences** | Most popular room types | Group by room_type |
+### **Real-Time Analytics**
+
+#### **Live Dashboard Updates**
+- **Real-Time Metrics**: Live updates of views and applications
+- **Instant Notifications**: Alerts for significant events or milestones
+- **Live User Tracking**: See active users and their current activities
+- **Performance Monitoring**: Real-time system health and performance metrics
 
 ---
 
-## 🚀 Deployment & Configuration
+## 👥 User Roles & Permissions
 
-### **Environment Configuration**
+### **Role Hierarchy**
 
-```bash
-# .env - Environment Variables
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-public-key
+#### **Public Users (Unauthenticated)**
+**Access Level**: Limited public access
+**Permissions**:
+- Browse complete tile catalog
+- Use 3D visualization system
+- Apply tiles to room surfaces
+- Scan QR codes and view tiles
+- Access customer portal only
 
-# Optional
-VITE_APP_NAME=Tile Showroom 3D
-VITE_APP_VERSION=1.0.0
-```
+**Restrictions**:
+- Cannot save favorites
+- Cannot access seller or admin portals
+- Limited analytics tracking (anonymous only)
+- No personalization features
 
-### **Build Configuration**
+#### **Seller Users**
+**Access Level**: Business management access
+**Permissions**:
+- Full access to seller dashboard
+- Manage own tile inventory (CRUD operations)
+- View own analytics and performance data
+- Generate and manage QR codes for own tiles
+- Update business profile and settings
+- Bulk upload tiles via CSV
+- Export own data and reports
 
-```typescript
-// vite.config.ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+**Restrictions**:
+- Cannot access other sellers' data
+- Cannot access admin panel
+- Cannot modify platform settings
+- Cannot create other user accounts
 
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: true,
-    port: 5173,
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          three: ['three', '@react-three/fiber', '@react-three/drei'],
-          supabase: ['@supabase/supabase-js']
-        }
-      }
-    }
-  },
-  optimizeDeps: {
-    include: ['three', '@react-three/fiber'],
-    exclude: ['lucide-react']
-  }
-});
-```
+#### **Admin Users**
+**Access Level**: Platform administration access
+**Permissions**:
+- Full access to all portals (customer, seller, admin)
+- View all sellers and their data
+- Platform-wide analytics and insights
+- Create and manage seller accounts
+- System configuration and settings
+- Cross-seller performance analysis
+- Platform health monitoring
 
-### **Deployment Steps**
+**Restrictions**:
+- Cannot modify seller's business-critical data without proper authorization
+- Cannot access individual user's personal information beyond business needs
 
-#### **1. Web Application**
+### **Permission Matrix**
 
-```bash
-# Build for production
-npm run build
-
-# Deploy to hosting provider
-# - Netlify: Connect GitHub repo
-# - Vercel: Connect GitHub repo  
-# - Custom server: Upload dist/ folder
-```
-
-#### **2. Mobile Application**
-
-```bash
-# Install EAS CLI
-npm install -g @expo/cli eas-cli
-
-# Login to Expo
-eas login
-
-# Build APK for testing
-eas build --platform android --profile preview
-
-# Build for production
-eas build --platform android --profile production
-eas build --platform ios --profile production
-```
-
-### **Domain Configuration**
-
-```nginx
-# Nginx configuration for multi-domain setup
-server {
-    listen 80;
-    server_name customers.yourdomain.com seller.yourdomain.com admin.yourdomain.com;
-    
-    location / {
-        try_files $uri $uri/ /index.html;
-        root /var/www/tile-showroom/dist;
-    }
-    
-    # API proxy (if needed)
-    location /api/ {
-        proxy_pass https://your-project-id.supabase.co/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
+| Feature | Public | Seller | Admin |
+|---------|--------|--------|-------|
+| **View Tiles** | ✅ | ✅ | ✅ |
+| **3D Visualization** | ✅ | ✅ | ✅ |
+| **Save Favorites** | ❌ | ✅ | ✅ |
+| **Manage Own Tiles** | ❌ | ✅ | ✅ |
+| **View Own Analytics** | ❌ | ✅ | ✅ |
+| **Generate QR Codes** | ❌ | ✅ | ✅ |
+| **Bulk Upload** | ❌ | ✅ | ✅ |
+| **View All Sellers** | ❌ | ❌ | ✅ |
+| **Platform Analytics** | ❌ | ❌ | ✅ |
+| **Create Accounts** | ❌ | ❌ | ✅ |
+| **System Settings** | ❌ | ❌ | ✅ |
 
 ---
 
 ## 📚 API Documentation
 
-### **Supabase API Endpoints**
+### **API Architecture**
+
+#### **RESTful Design**
+The API follows REST principles with predictable URL patterns:
+- **Resource-based URLs**: `/tiles`, `/analytics`, `/users`
+- **HTTP Methods**: GET (read), POST (create), PUT (update), DELETE (remove)
+- **Status Codes**: Proper HTTP status codes for all responses
+- **Content Negotiation**: JSON format for all data exchange
 
 #### **Authentication**
+All API requests use JWT token authentication:
+- **Header Format**: `Authorization: Bearer <jwt_token>`
+- **Token Refresh**: Automatic token refresh before expiration
+- **Role Validation**: Server-side role verification for protected endpoints
 
-```typescript
-// Sign In
-POST /auth/v1/token?grant_type=password
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
+### **Core API Endpoints**
 
-// Get User
-GET /auth/v1/user
-Headers: Authorization: Bearer <token>
-```
-
-#### **Tiles Management**
-
-```typescript
-// Get All Tiles
-GET /rest/v1/tiles?select=*
-
-// Get Tile by ID
-GET /rest/v1/tiles?id=eq.tile_123&select=*
-
-// Create Tile
-POST /rest/v1/tiles
-{
-  "id": "tile_123",
-  "name": "Marble White",
-  "image_url": "https://...",
-  "texture_url": "https://...",
-  "category": "both",
-  "size": "60x60 cm",
-  "price": 2500,
-  "in_stock": true,
-  "showroom_id": "showroom1",
-  "seller_id": "uuid-here"
-}
-
-// Update Tile
-PATCH /rest/v1/tiles?id=eq.tile_123
-{
-  "price": 2800,
-  "in_stock": false
-}
-
-// Delete Tile
-DELETE /rest/v1/tiles?id=eq.tile_123
-```
+#### **Tile Management**
+- **GET /tiles**: Retrieve tile catalog with filtering and pagination
+- **GET /tiles/{id}**: Get specific tile details
+- **POST /tiles**: Create new tile (seller/admin only)
+- **PUT /tiles/{id}**: Update tile information (owner/admin only)
+- **DELETE /tiles/{id}**: Remove tile (owner/admin only)
 
 #### **Analytics**
+- **POST /analytics/view**: Track tile view event
+- **POST /analytics/apply**: Track tile application event
+- **GET /analytics/summary**: Get aggregated analytics data
+- **GET /analytics/tiles/popular**: Get most viewed/applied tiles
 
-```typescript
-// Track Tile View
-POST /rest/v1/tile_analytics
-{
-  "tile_id": "tile_123",
-  "showroom_id": "showroom1",
-  "action_type": "view",
-  "timestamp": "2024-01-15T10:30:00Z"
-}
+#### **User Management**
+- **POST /auth/signin**: Authenticate user credentials
+- **POST /auth/signup**: Create new user account (admin only)
+- **GET /auth/user**: Get current user profile
+- **PUT /auth/user**: Update user profile
 
-// Track Tile Application
-POST /rest/v1/tile_analytics
-{
-  "tile_id": "tile_123",
-  "showroom_id": "showroom1",
-  "action_type": "apply",
-  "surface_type": "floor",
-  "room_type": "hall",
-  "timestamp": "2024-01-15T10:35:00Z"
-}
+#### **QR Code Management**
+- **POST /qr/generate**: Generate QR code for tile
+- **POST /qr/bulk**: Generate QR codes for multiple tiles
+- **GET /qr/download**: Download QR code package
 
-// Get Analytics Summary
-GET /rest/v1/tile_analytics_summary?showroom_id=eq.showroom1&select=*
-```
+### **API Response Formats**
 
-### **Custom API Functions**
+#### **Success Response**
+All successful API responses follow this format:
+- **Status Code**: 200, 201, or 204
+- **Data**: Requested resource or confirmation
+- **Metadata**: Pagination, timestamps, or additional context
 
-```sql
--- Get Most Viewed Tiles
-SELECT * FROM most_viewed_tiles 
-WHERE showroom_id = 'showroom1' 
-ORDER BY view_count DESC 
-LIMIT 10;
+#### **Error Response**
+Error responses provide clear information for debugging:
+- **Status Code**: 400, 401, 403, 404, or 500
+- **Error Code**: Specific error identifier
+- **Message**: Human-readable error description
+- **Details**: Additional context for debugging
 
--- Get Seller Analytics
-SELECT 
-  t.name,
-  tas.view_count,
-  tas.apply_count,
-  ROUND((tas.apply_count::float / NULLIF(tas.view_count, 0) * 100), 2) as conversion_rate
-FROM tile_analytics_summary tas
-JOIN tiles t ON t.id = tas.tile_id
-WHERE t.seller_id = 'seller-uuid'
-ORDER BY tas.view_count DESC;
-```
+---
+
+## 🚀 Deployment Guide
+
+### **Environment Configuration**
+
+#### **Development Environment**
+- **Local Database**: Supabase cloud instance for development
+- **Hot Reload**: Instant updates during development
+- **Debug Logging**: Verbose logging for troubleshooting
+- **Mock Data**: Sample tiles and users for testing
+
+#### **Staging Environment**
+- **Production-like Setup**: Mirror production configuration
+- **Test Data**: Realistic test data for validation
+- **Performance Testing**: Load testing and optimization
+- **Security Testing**: Vulnerability scanning and penetration testing
+
+#### **Production Environment**
+- **Optimized Build**: Minified and compressed assets
+- **CDN Integration**: Fast content delivery worldwide
+- **Monitoring**: Comprehensive logging and alerting
+- **Backup Strategy**: Automated backups and disaster recovery
+
+### **Deployment Process**
+
+#### **Web Application Deployment**
+1. **Build Optimization**: Create production-optimized build
+2. **Asset Optimization**: Compress images and minimize bundle size
+3. **Environment Configuration**: Set production environment variables
+4. **Domain Setup**: Configure DNS and SSL certificates
+5. **CDN Configuration**: Set up content delivery network
+6. **Monitoring Setup**: Configure logging and alerting
+
+#### **Mobile Application Deployment**
+1. **Build Configuration**: Set up build profiles for different environments
+2. **Code Signing**: Configure certificates for app store distribution
+3. **Testing**: Comprehensive testing on multiple devices
+4. **Store Submission**: Submit to Apple App Store and Google Play Store
+5. **Beta Testing**: Distribute to beta testers for validation
+
+### **Infrastructure Requirements**
+
+#### **Minimum Requirements**
+- **CPU**: 2 cores for basic operation
+- **Memory**: 4GB RAM for development, 8GB for production
+- **Storage**: 50GB for application and database
+- **Network**: Stable internet connection for Supabase access
+
+#### **Recommended Requirements**
+- **CPU**: 4+ cores for optimal performance
+- **Memory**: 16GB+ RAM for heavy 3D workloads
+- **Storage**: 100GB+ SSD for fast asset loading
+- **Network**: High-speed connection for real-time features
 
 ---
 
 ## 🛠️ Development Workflow
 
-### **Getting Started**
+### **Development Environment Setup**
 
-```bash
-# 1. Clone repository
-git clone <repository-url>
-cd tile-showroom-3d
+#### **Prerequisites**
+- **Node.js**: Version 16 or higher
+- **npm**: Latest version for package management
+- **Git**: Version control system
+- **Code Editor**: VS Code recommended with TypeScript extensions
+- **Browser**: Chrome or Firefox with developer tools
 
-# 2. Install dependencies
-npm install
+#### **Initial Setup Process**
+1. **Repository Clone**: Clone project repository to local machine
+2. **Dependency Installation**: Install all required npm packages
+3. **Environment Configuration**: Set up environment variables
+4. **Database Setup**: Configure Supabase connection and run migrations
+5. **Development Server**: Start local development server
+6. **Mobile Setup**: Configure mobile development environment (optional)
 
-# 3. Set up environment
-cp .env.example .env
-# Edit .env with your Supabase credentials
+### **Development Guidelines**
 
-# 4. Start development server
-npm run dev
+#### **Code Quality Standards**
+- **TypeScript**: Strict typing for all components and functions
+- **ESLint**: Consistent code style and error prevention
+- **Prettier**: Automatic code formatting
+- **Component Documentation**: Clear documentation for all components
+- **Test Coverage**: Unit tests for critical functionality
 
-# 5. Set up mobile app (optional)
-cd mobile-app
-npm install
-npm start
-```
+#### **Git Workflow**
+- **Feature Branches**: Separate branches for each feature or bug fix
+- **Commit Messages**: Clear, descriptive commit messages
+- **Pull Requests**: Code review process for all changes
+- **Continuous Integration**: Automated testing and deployment
 
-### **Development Scripts**
+#### **Testing Strategy**
+- **Unit Tests**: Test individual components and functions
+- **Integration Tests**: Test component interactions and API calls
+- **End-to-End Tests**: Test complete user workflows
+- **Performance Tests**: Monitor and optimize application performance
 
-```json
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint .",
-    "type-check": "tsc --noEmit",
-    "test": "vitest"
-  }
-}
-```
+---
 
-### **Code Structure Guidelines**
+## 🎯 Feature Specifications
 
-#### **File Organization**
+### **Customer Portal Features**
 
-```
-src/
-├── components/          # Reusable UI components
-│   ├── Common/         # Shared components
-│   ├── Auth/           # Authentication components
-│   ├── Dashboard/      # Dashboard-specific components
-│   └── 3D/            # 3D visualization components
-├── pages/              # Page components
-├── hooks/              # Custom React hooks
-├── utils/              # Utility functions
-├── stores/             # State management
-├── types/              # TypeScript type definitions
-├── lib/                # External library configurations
-└── data/               # Mock data and constants
-```
+#### **Tile Browsing System**
+**Search Functionality**:
+- **Text Search**: Search by tile name, description, or keywords
+- **Category Filtering**: Filter by floor, wall, or both categories
+- **Price Range**: Filter tiles by price range
+- **Size Filtering**: Filter by tile dimensions
+- **Availability**: Show only in-stock tiles
 
-#### **Naming Conventions**
+**Tile Display**:
+- **Grid Layout**: Responsive grid showing tile thumbnails
+- **Detailed View**: Expanded view with specifications and pricing
+- **Image Gallery**: Multiple angles and close-up views
+- **Specification Sheet**: Technical details and installation information
 
-- **Components**: PascalCase (`TileCard.tsx`)
-- **Hooks**: camelCase with 'use' prefix (`useAuth.ts`)
-- **Utilities**: camelCase (`domainUtils.ts`)
-- **Constants**: UPPER_SNAKE_CASE (`API_ENDPOINTS`)
-- **Types**: PascalCase (`UserProfile`, `TileData`)
+#### **3D Visualization Features**
+**Room Selection**:
+- **Room Types**: Hall, washroom, kitchen with realistic proportions
+- **Room Customization**: Different layouts and configurations
+- **Lighting Options**: Various lighting conditions (day, night, artificial)
+- **View Modes**: Different camera angles and perspectives
 
-#### **Component Structure**
+**Tile Application**:
+- **Surface Selection**: Choose floor, wall, or both surfaces
+- **Real-time Preview**: Instant visual feedback of applied tiles
+- **Multiple Tiles**: Apply different tiles to different surfaces
+- **Comparison Mode**: Compare multiple tile options side-by-side
 
-```typescript
-// Component template
-import React, { useState, useEffect } from 'react';
-import { ComponentProps } from '../types';
+### **Seller Dashboard Features**
 
-interface Props extends ComponentProps {
-  // Component-specific props
-}
+#### **Inventory Management**
+**Tile CRUD Operations**:
+- **Add Tiles**: Complete tile information entry with validation
+- **Edit Tiles**: Update pricing, availability, and specifications
+- **Delete Tiles**: Remove tiles with confirmation and impact analysis
+- **Bulk Operations**: Mass updates for pricing or availability changes
 
-export const ComponentName: React.FC<Props> = ({ 
-  prop1, 
-  prop2,
-  ...otherProps 
-}) => {
-  // State
-  const [state, setState] = useState(initialValue);
-  
-  // Effects
-  useEffect(() => {
-    // Effect logic
-  }, [dependencies]);
-  
-  // Handlers
-  const handleAction = () => {
-    // Handler logic
-  };
-  
-  // Render
-  return (
-    <div className="component-container">
-      {/* Component JSX */}
-    </div>
-  );
-};
-```
+**Inventory Tracking**:
+- **Stock Levels**: Track quantity and availability
+- **Low Stock Alerts**: Notifications when inventory runs low
+- **Reorder Points**: Automatic reorder suggestions
+- **Supplier Integration**: Connect with tile suppliers for restocking
 
-### **Testing Strategy**
+#### **Business Management**
+**Profile Management**:
+- **Business Information**: Company details, contact information, branding
+- **Showroom Configuration**: Customize showroom appearance and layout
+- **Pricing Strategy**: Set pricing rules and discount policies
+- **Catalog Organization**: Organize tiles into collections and categories
 
-```typescript
-// Component testing with Vitest
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { TileCard } from './TileCard';
+### **Admin Panel Features**
 
-describe('TileCard', () => {
-  const mockTile = {
-    id: '1',
-    name: 'Test Tile',
-    imageUrl: 'https://example.com/image.jpg',
-    price: 1000,
-    category: 'floor'
-  };
+#### **Platform Management**
+**Seller Administration**:
+- **Account Creation**: Create new seller accounts with business setup
+- **Subscription Management**: Handle billing and subscription status
+- **Performance Monitoring**: Track seller success and engagement
+- **Support Management**: Handle seller support requests and issues
 
-  it('renders tile information correctly', () => {
-    render(<TileCard tile={mockTile} />);
-    
-    expect(screen.getByText('Test Tile')).toBeInTheDocument();
-    expect(screen.getByText('₹1000')).toBeInTheDocument();
-  });
+**System Administration**:
+- **Platform Configuration**: System-wide settings and configurations
+- **Security Management**: Monitor security events and manage access
+- **Performance Monitoring**: System health and performance metrics
+- **Backup Management**: Database backups and disaster recovery
 
-  it('handles tile selection', () => {
-    const onSelect = vi.fn();
-    render(<TileCard tile={mockTile} onSelect={onSelect} />);
-    
-    fireEvent.click(screen.getByRole('button'));
-    expect(onSelect).toHaveBeenCalledWith(mockTile);
-  });
-});
-```
+---
+
+## 💼 Business Logic
+
+### **Multi-Tenant Architecture**
+
+#### **Tenant Isolation**
+**Data Separation**:
+- Each seller's data is completely isolated from other sellers
+- Database-level security ensures no cross-tenant data access
+- Separate analytics and reporting for each tenant
+- Independent customization and branding per tenant
+
+**Resource Sharing**:
+- Shared application infrastructure for cost efficiency
+- Common 3D rendering engine and assets
+- Shared authentication and security systems
+- Centralized monitoring and maintenance
+
+#### **Subscription Model**
+**Tier Structure**:
+- **Basic Tier**: Limited tiles, basic analytics, standard support
+- **Professional Tier**: Unlimited tiles, advanced analytics, priority support
+- **Enterprise Tier**: Custom features, dedicated support, white-label options
+
+**Billing Integration**:
+- **Subscription Management**: Automated billing and renewal
+- **Usage Tracking**: Monitor feature usage for billing purposes
+- **Payment Processing**: Secure payment handling and invoicing
+- **Upgrade/Downgrade**: Seamless tier transitions
+
+### **Business Rules**
+
+#### **Tile Management Rules**
+- **Unique Identification**: Each tile must have unique ID within showroom
+- **Category Validation**: Tiles must be categorized as floor, wall, or both
+- **Image Requirements**: All tiles must have valid image and texture URLs
+- **Pricing Rules**: Prices must be positive numbers with currency formatting
+- **Stock Management**: Availability tracking with automatic updates
+
+#### **User Management Rules**
+- **Role Assignment**: Users can only have one primary role
+- **Account Creation**: Only admins can create new seller accounts
+- **Profile Completion**: Sellers must complete business profile before accessing features
+- **Authentication Requirements**: Secure password requirements and session management
+
+---
+
+## 🔒 Security Implementation
+
+### **Security Layers**
+
+#### **Application Security**
+**Input Validation**:
+- **Client-Side Validation**: Immediate feedback for user inputs
+- **Server-Side Validation**: Comprehensive validation of all data
+- **SQL Injection Prevention**: Parameterized queries and ORM usage
+- **XSS Protection**: Content sanitization and encoding
+
+**Authentication Security**:
+- **Password Requirements**: Strong password policies
+- **Session Management**: Secure session handling with automatic expiration
+- **Token Security**: JWT tokens with proper signing and validation
+- **Multi-Factor Authentication**: Optional 2FA for enhanced security
+
+#### **Database Security**
+**Access Control**:
+- **Row Level Security**: Database-level access control for multi-tenancy
+- **Role-Based Permissions**: Different database roles for different user types
+- **Audit Logging**: Complete audit trail for all database operations
+- **Encryption**: Data encryption at rest and in transit
+
+**Data Protection**:
+- **Backup Security**: Encrypted backups with secure storage
+- **Data Retention**: Policies for data cleanup and archival
+- **Privacy Compliance**: GDPR and other privacy regulation compliance
+- **Data Anonymization**: Remove personal data from analytics
+
+#### **Infrastructure Security**
+**Network Security**:
+- **HTTPS Enforcement**: All communications encrypted
+- **CORS Configuration**: Proper cross-origin resource sharing setup
+- **Rate Limiting**: Prevent abuse and ensure fair usage
+- **DDoS Protection**: Protection against distributed denial of service attacks
+
+---
+
+## ⚡ Performance Optimization
+
+### **Frontend Performance**
+
+#### **Loading Optimization**
+**Code Splitting**:
+- **Route-Based Splitting**: Load only necessary code for current page
+- **Component Lazy Loading**: Load heavy components only when needed
+- **Dynamic Imports**: Load features on-demand
+- **Bundle Optimization**: Minimize bundle size with tree shaking
+
+**Asset Optimization**:
+- **Image Compression**: Optimize images for web delivery
+- **Texture Optimization**: Compress 3D textures for faster loading
+- **Font Optimization**: Load only necessary font weights and styles
+- **Icon Optimization**: Use SVG icons for scalability and performance
+
+#### **Runtime Performance**
+**React Optimization**:
+- **Memoization**: Prevent unnecessary re-renders with React.memo
+- **Callback Optimization**: Use useCallback for stable function references
+- **State Optimization**: Minimize state updates and optimize state structure
+- **Virtual Scrolling**: Handle large lists efficiently
+
+**3D Performance**:
+- **Geometry Optimization**: Reduce polygon counts for better performance
+- **Texture Management**: Efficient texture loading and caching
+- **Render Optimization**: Optimize render loops and frame rates
+- **Memory Management**: Proper cleanup of 3D resources
+
+### **Backend Performance**
+
+#### **Database Optimization**
+**Query Optimization**:
+- **Index Strategy**: Strategic indexing for frequently queried columns
+- **Query Planning**: Analyze and optimize expensive queries
+- **Connection Pooling**: Efficient database connection management
+- **Caching Strategy**: Cache frequently accessed data
+
+**Data Management**:
+- **Pagination**: Efficient handling of large datasets
+- **Data Archival**: Archive old data to maintain performance
+- **Cleanup Procedures**: Regular cleanup of temporary and obsolete data
+- **Backup Optimization**: Efficient backup and restore procedures
 
 ---
 
 ## 🔧 Troubleshooting Guide
 
-### **Common Issues**
+### **Common Issues and Solutions**
 
-#### **1. Supabase Connection Issues**
-
-**Problem**: "Failed to fetch" or connection errors
-
-**Solutions**:
-```bash
-# Check environment variables
-echo $VITE_SUPABASE_URL
-echo $VITE_SUPABASE_ANON_KEY
-
-# Verify Supabase project is active
-# Check Supabase dashboard for project status
-
-# Test connection
-curl -H "apikey: YOUR_ANON_KEY" \
-     "https://your-project.supabase.co/rest/v1/tiles?select=*"
-```
-
-#### **2. Authentication Problems**
-
-**Problem**: "Access Restricted" on admin/seller pages
+#### **Authentication Problems**
+**Issue**: "Access Restricted" message on admin/seller portals
+**Diagnosis Steps**:
+1. Verify Supabase credentials are correctly configured
+2. Check if user exists in auth.users table
+3. Confirm user profile exists with correct role
+4. Validate RLS policies are properly configured
 
 **Solutions**:
-```sql
--- Check if user profile exists
-SELECT * FROM user_profiles WHERE email = 'your-email@example.com';
+- Create missing user profiles in database
+- Update user roles to match required access level
+- Check environment variables for correct Supabase URLs
+- Verify domain routing configuration
 
--- Create admin profile if missing
-INSERT INTO user_profiles (user_id, email, role)
-VALUES ('user-uuid-here', 'admin@example.com', 'admin');
-
--- Check RLS policies
-SELECT * FROM pg_policies WHERE tablename = 'user_profiles';
-```
-
-#### **3. 3D Rendering Issues**
-
-**Problem**: 3D scenes not loading or textures missing
+#### **3D Rendering Issues**
+**Issue**: 3D scenes not loading or textures missing
+**Diagnosis Steps**:
+1. Check browser WebGL support
+2. Verify texture URLs are accessible
+3. Monitor browser console for Three.js errors
+4. Test with different browsers and devices
 
 **Solutions**:
-```typescript
-// Check WebGL support
-const canvas = document.createElement('canvas');
-const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-if (!gl) {
-  console.error('WebGL not supported');
-}
+- Provide WebGL fallback for unsupported browsers
+- Implement texture loading error handling
+- Optimize texture sizes for better compatibility
+- Add loading states for better user experience
 
-// Verify texture URLs
-const testImage = new Image();
-testImage.onload = () => console.log('Texture loaded successfully');
-testImage.onerror = () => console.error('Texture failed to load');
-testImage.src = 'your-texture-url';
-```
-
-#### **4. Mobile App Issues**
-
-**Problem**: QR scanner not working
+#### **Database Connection Problems**
+**Issue**: "Failed to fetch" errors from Supabase
+**Diagnosis Steps**:
+1. Verify Supabase project is active and accessible
+2. Check API keys and URLs in environment configuration
+3. Test database connection from Supabase dashboard
+4. Monitor network requests in browser developer tools
 
 **Solutions**:
-```typescript
-// Check camera permissions
-import { BarCodeScanner } from 'expo-barcode-scanner';
+- Update environment variables with correct credentials
+- Check Supabase project status and billing
+- Verify CORS settings in Supabase configuration
+- Implement retry logic for transient failures
 
-const checkPermissions = async () => {
-  const { status } = await BarCodeScanner.requestPermissionsAsync();
-  console.log('Camera permission status:', status);
-};
+#### **Mobile App Issues**
+**Issue**: QR scanner not working or 3D rendering problems
+**Diagnosis Steps**:
+1. Check camera permissions on device
+2. Verify QR code format and data structure
+3. Test 3D rendering on different devices
+4. Monitor mobile app logs and error reports
 
-// Test QR code format
-const testQRData = {
-  type: 'tile',
-  tileId: 'test-tile-id',
-  showroomId: 'test-showroom'
-};
-console.log('Test QR data:', JSON.stringify(testQRData));
-```
+**Solutions**:
+- Request proper camera permissions
+- Validate QR code generation process
+- Optimize 3D scenes for mobile performance
+- Implement graceful degradation for older devices
 
-### **Performance Optimization**
+### **Performance Troubleshooting**
 
-#### **1. 3D Performance**
+#### **Slow Loading Times**
+**Diagnosis**:
+- Monitor network requests and response times
+- Analyze bundle sizes and loading patterns
+- Check database query performance
+- Profile 3D rendering performance
 
-```typescript
-// Optimize texture loading
-const optimizeTexture = (texture: THREE.Texture) => {
-  texture.generateMipmaps = false;
-  texture.minFilter = THREE.LinearFilter;
-  texture.magFilter = THREE.LinearFilter;
-  texture.format = THREE.RGBFormat;
-};
+**Optimization Strategies**:
+- Implement progressive loading for large assets
+- Optimize database queries and add indexes
+- Use CDN for static asset delivery
+- Implement caching strategies
 
-// Reduce geometry complexity
-const createOptimizedGeometry = () => {
-  const geometry = new THREE.PlaneGeometry(10, 10, 1, 1); // Low poly
-  return geometry;
-};
-```
+#### **Memory Issues**
+**Diagnosis**:
+- Monitor memory usage in browser developer tools
+- Check for memory leaks in 3D scenes
+- Analyze component re-render patterns
+- Profile mobile app memory usage
 
-#### **2. Database Performance**
-
-```sql
--- Add indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_tiles_category ON tiles(category);
-CREATE INDEX IF NOT EXISTS idx_tiles_seller_showroom ON tiles(seller_id, showroom_id);
-CREATE INDEX IF NOT EXISTS idx_analytics_tile_action ON tile_analytics(tile_id, action_type);
-
--- Optimize analytics queries
-EXPLAIN ANALYZE SELECT * FROM tile_analytics_summary WHERE showroom_id = 'showroom1';
-```
-
-#### **3. Frontend Performance**
-
-```typescript
-// Lazy load components
-const LazyRoom3D = React.lazy(() => import('./components/Room3D'));
-const LazyAnalytics = React.lazy(() => import('./components/AnalyticsDashboard'));
-
-// Memoize expensive calculations
-const MemoizedTileCard = React.memo(TileCard);
-
-// Optimize re-renders
-const optimizedSelector = useCallback(
-  (state) => state.tiles.filter(tile => tile.category === selectedCategory),
-  [selectedCategory]
-);
-```
-
-### **Debugging Tools**
-
-```typescript
-// Debug logging utility
-export const debugLog = (component: string, action: string, data?: any) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[${component}] ${action}:`, data);
-  }
-};
-
-// Supabase query debugging
-const debugQuery = async (query: any) => {
-  console.log('Query:', query);
-  const result = await query;
-  console.log('Result:', result);
-  return result;
-};
-```
+**Solutions**:
+- Implement proper cleanup for 3D resources
+- Optimize component lifecycle management
+- Use object pooling for frequently created objects
+- Implement garbage collection strategies
 
 ---
 
-## 🚀 Future Enhancements
+## 🚀 Future Roadmap
 
-### **Planned Features**
+### **Phase 1: Core Platform Enhancement**
 
-1. **Advanced 3D Features**
-   - AR integration for mobile
-   - VR support for immersive experience
-   - Advanced lighting and shadows
-   - Material property simulation
+#### **Advanced 3D Features**
+**Augmented Reality (AR) Integration**:
+- **Mobile AR**: Use device camera to overlay tiles in real spaces
+- **Web AR**: WebXR support for AR experiences in browsers
+- **Spatial Tracking**: Accurate placement of tiles in real environments
+- **Lighting Estimation**: Match virtual lighting to real environment
 
-2. **AI Integration**
-   - AI-powered tile recommendations
-   - Style matching algorithms
-   - Automated room design suggestions
-   - Image-based tile search
+**Virtual Reality (VR) Support**:
+- **VR Headset Compatibility**: Support for Oculus, HTC Vive, and other VR devices
+- **Immersive Showrooms**: Full VR showroom experiences
+- **Hand Tracking**: Natural interaction with VR controllers
+- **Social VR**: Multi-user VR showroom experiences
 
-3. **Enhanced Analytics**
-   - Heat maps for tile popularity
-   - Predictive analytics
-   - Customer behavior insights
-   - A/B testing framework
+#### **AI-Powered Features**
+**Intelligent Recommendations**:
+- **Style Matching**: AI-powered tile recommendations based on room style
+- **Color Coordination**: Suggest complementary tiles and colors
+- **Trend Analysis**: Identify and recommend trending tile styles
+- **Personalization**: Learn user preferences for better recommendations
 
-4. **Business Features**
-   - Multi-currency support
-   - Inventory management
-   - Order processing
-   - Payment integration
+**Image Recognition**:
+- **Photo Upload**: Upload room photos for automatic tile suggestions
+- **Style Detection**: Identify room style and suggest appropriate tiles
+- **Color Extraction**: Extract color palette from room photos
+- **Measurement Estimation**: Estimate tile quantities from room photos
 
-5. **Platform Improvements**
-   - White-label solutions
-   - API marketplace
-   - Third-party integrations
-   - Advanced reporting
+### **Phase 2: Business Platform Expansion**
 
-### **Technical Roadmap**
+#### **E-commerce Integration**
+**Shopping Cart System**:
+- **Tile Selection**: Add tiles to cart with quantity and specifications
+- **Price Calculation**: Automatic pricing with taxes and shipping
+- **Checkout Process**: Secure payment processing and order management
+- **Order Tracking**: Real-time order status and delivery tracking
 
-```mermaid
-gantt
-    title Development Roadmap
-    dateFormat  YYYY-MM-DD
-    section Phase 1
-    Core Platform     :done, phase1, 2024-01-01, 2024-03-31
-    Mobile App        :done, mobile1, 2024-02-01, 2024-04-30
-    section Phase 2
-    Advanced 3D       :active, phase2, 2024-04-01, 2024-06-30
-    AI Features       :phase2-ai, 2024-05-01, 2024-07-31
-    section Phase 3
-    AR Integration    :phase3, 2024-07-01, 2024-09-30
-    Business Features :phase3-biz, 2024-08-01, 2024-10-31
-```
+**Inventory Management**:
+- **Real-time Stock**: Live inventory tracking across all channels
+- **Supplier Integration**: Connect with tile manufacturers and distributors
+- **Automated Reordering**: Automatic reorder when stock levels are low
+- **Demand Forecasting**: Predict demand based on analytics data
+
+#### **Advanced Analytics**
+**Business Intelligence**:
+- **Predictive Analytics**: Forecast sales and trends
+- **Customer Segmentation**: Identify different customer types and behaviors
+- **Market Analysis**: Analyze market trends and competitive positioning
+- **ROI Tracking**: Track return on investment for different tiles and campaigns
+
+**Heat Map Analytics**:
+- **Interaction Heat Maps**: Visual representation of user interactions
+- **Popular Areas**: Identify most engaging parts of 3D rooms
+- **Conversion Funnels**: Analyze customer journey from view to purchase
+- **A/B Testing**: Test different layouts and features for optimization
+
+### **Phase 3: Platform Ecosystem**
+
+#### **API Marketplace**
+**Third-Party Integrations**:
+- **ERP Systems**: Integration with business management systems
+- **CRM Platforms**: Customer relationship management integration
+- **Accounting Software**: Financial system integration
+- **Marketing Tools**: Email marketing and campaign management integration
+
+**Developer Platform**:
+- **Public API**: Open API for third-party developers
+- **SDK Development**: Software development kits for common platforms
+- **Plugin System**: Allow third-party plugins and extensions
+- **App Store**: Marketplace for third-party applications and integrations
+
+#### **White-Label Solutions**
+**Custom Branding**:
+- **Complete Rebranding**: Custom logos, colors, and styling
+- **Domain Customization**: Custom domains for white-label clients
+- **Feature Customization**: Enable/disable features per client
+- **Custom Workflows**: Tailored workflows for specific industries
+
+---
+
+## 📊 Business Model & Monetization
+
+### **Revenue Streams**
+
+#### **Subscription-Based Revenue**
+**Tier Structure**:
+- **Starter**: $99/month - Up to 100 tiles, basic analytics, email support
+- **Professional**: $299/month - Unlimited tiles, advanced analytics, priority support
+- **Enterprise**: $999/month - Custom features, dedicated support, white-label options
+
+**Value-Added Services**:
+- **Setup Services**: Professional onboarding and configuration
+- **Custom Development**: Bespoke features and integrations
+- **Training Services**: User training and best practices consulting
+- **Premium Support**: 24/7 support with guaranteed response times
+
+#### **Transaction-Based Revenue**
+**Commission Model**:
+- **Sales Commission**: Percentage of sales generated through platform
+- **Lead Generation**: Fees for qualified customer leads
+- **Premium Listings**: Enhanced visibility for featured tiles
+- **Advertising Revenue**: Sponsored tile placements and promotions
+
+### **Market Positioning**
+
+#### **Competitive Advantages**
+- **Technology Leadership**: Advanced 3D visualization capabilities
+- **Mobile Integration**: Seamless QR code and mobile experience
+- **Multi-Tenant Efficiency**: Cost-effective solution for multiple sellers
+- **Analytics Depth**: Comprehensive insights into customer behavior
+- **Scalability**: Platform grows with business needs
+
+#### **Target Customer Segments**
+**Primary Segment**: Mid-size tile retailers ($1M-$50M annual revenue)
+**Secondary Segment**: Large tile distributors and chains
+**Tertiary Segment**: Interior design firms and contractors
+**Emerging Segment**: Online-only tile retailers
+
+---
+
+## 🔍 Quality Assurance
+
+### **Testing Strategy**
+
+#### **Automated Testing**
+**Unit Testing**:
+- **Component Tests**: Test individual React components
+- **Function Tests**: Test utility functions and business logic
+- **Hook Tests**: Test custom React hooks
+- **Service Tests**: Test API integration functions
+
+**Integration Testing**:
+- **API Integration**: Test Supabase integration and data flow
+- **Component Integration**: Test component interactions
+- **State Management**: Test Zustand store operations
+- **Authentication Flow**: Test complete authentication process
+
+**End-to-End Testing**:
+- **User Workflows**: Test complete user journeys
+- **Cross-Browser Testing**: Ensure compatibility across browsers
+- **Mobile Testing**: Test mobile app functionality
+- **Performance Testing**: Load testing and stress testing
+
+#### **Manual Testing**
+**User Acceptance Testing**:
+- **Usability Testing**: Test user experience and interface design
+- **Accessibility Testing**: Ensure compliance with accessibility standards
+- **Device Testing**: Test on various devices and screen sizes
+- **Network Testing**: Test under different network conditions
+
+### **Quality Metrics**
+
+#### **Performance Metrics**
+- **Page Load Time**: Target under 3 seconds for initial load
+- **3D Render Time**: Target under 2 seconds for scene initialization
+- **API Response Time**: Target under 500ms for database queries
+- **Mobile Performance**: Target 60fps for 3D animations
+
+#### **Quality Metrics**
+- **Bug Density**: Target less than 1 bug per 1000 lines of code
+- **Test Coverage**: Target 80%+ code coverage
+- **User Satisfaction**: Target 4.5+ star rating
+- **Uptime**: Target 99.9% availability
+
+---
+
+## 📈 Analytics & Reporting
+
+### **Analytics Framework**
+
+#### **Data Collection**
+**User Behavior Analytics**:
+- **Page Views**: Track which pages and features are most popular
+- **User Journey**: Map complete customer journey from entry to conversion
+- **Interaction Patterns**: Understand how users interact with 3D visualization
+- **Device Analytics**: Track device types, browsers, and performance
+
+**Business Analytics**:
+- **Tile Performance**: Track which tiles are most viewed and applied
+- **Conversion Rates**: Measure effectiveness of different tiles and categories
+- **Revenue Analytics**: Track subscription revenue and growth
+- **Customer Acquisition**: Monitor customer acquisition costs and channels
+
+#### **Reporting System**
+**Automated Reports**:
+- **Daily Summaries**: Key metrics and performance indicators
+- **Weekly Trends**: Performance trends and pattern analysis
+- **Monthly Business Reviews**: Comprehensive business performance reports
+- **Quarterly Strategic Reports**: Strategic insights and recommendations
+
+**Custom Reports**:
+- **Ad-hoc Analysis**: Custom queries and data exploration
+- **Export Functionality**: Export data in various formats (CSV, PDF, Excel)
+- **Scheduled Reports**: Automated report generation and delivery
+- **Interactive Dashboards**: Real-time dashboards with drill-down capabilities
+
+---
+
+## 🌟 User Experience Design
+
+### **Design Philosophy**
+
+#### **User-Centered Design**
+**Accessibility First**:
+- **WCAG Compliance**: Meet Web Content Accessibility Guidelines
+- **Keyboard Navigation**: Full keyboard accessibility for all features
+- **Screen Reader Support**: Proper semantic markup and ARIA labels
+- **Color Contrast**: Ensure sufficient contrast for all text and UI elements
+
+**Mobile-First Approach**:
+- **Responsive Design**: Seamless experience across all device sizes
+- **Touch Optimization**: Touch-friendly interface elements
+- **Performance Focus**: Optimized for mobile networks and devices
+- **Progressive Enhancement**: Enhanced features for capable devices
+
+#### **Visual Design System**
+**Color Strategy**:
+- **Domain-Specific Themes**: Different color schemes for each portal
+- **Accessibility Colors**: High contrast ratios for readability
+- **Brand Consistency**: Consistent color usage across all interfaces
+- **Emotional Design**: Colors that evoke appropriate emotions for each user type
+
+**Typography System**:
+- **Hierarchy**: Clear typographic hierarchy for information organization
+- **Readability**: Optimized font sizes and line heights for all devices
+- **Brand Fonts**: Custom fonts that reflect brand personality
+- **Performance**: Optimized font loading for fast page rendering
+
+### **Interaction Design**
+
+#### **3D Interaction Patterns**
+**Intuitive Controls**:
+- **Mouse/Touch Controls**: Natural interaction patterns for 3D navigation
+- **Gesture Support**: Pinch-to-zoom, drag-to-rotate on mobile devices
+- **Keyboard Shortcuts**: Power user shortcuts for efficient navigation
+- **Voice Commands**: Future voice control integration
+
+**Visual Feedback**:
+- **Hover States**: Clear feedback for interactive elements
+- **Loading States**: Progress indicators for 3D scene loading
+- **Success States**: Confirmation feedback for completed actions
+- **Error States**: Clear error messages with recovery suggestions
+
+---
+
+## 🔄 Data Flow & State Management
+
+### **Application State Architecture**
+
+#### **State Categories**
+**UI State**:
+- **Modal Visibility**: Control display of dialogs and overlays
+- **Loading States**: Track loading status for different operations
+- **Form State**: Manage form inputs and validation
+- **Navigation State**: Track current page and navigation history
+
+**Business State**:
+- **User Authentication**: Current user session and profile
+- **Tile Selection**: Selected tiles and room configuration
+- **Showroom Data**: Current showroom information and customization
+- **Analytics Data**: Performance metrics and insights
+
+**Cache State**:
+- **API Cache**: Cache frequently accessed API responses
+- **Image Cache**: Cache loaded images and textures
+- **User Preferences**: Cache user settings and preferences
+- **Session Cache**: Cache session-specific data
+
+#### **State Synchronization**
+**Real-Time Updates**:
+- **Live Analytics**: Real-time updates of tile performance metrics
+- **Inventory Changes**: Immediate updates when tiles are added or modified
+- **User Activity**: Live tracking of user interactions and engagement
+- **System Status**: Real-time system health and performance monitoring
+
+**Cross-Device Sync**:
+- **Favorites Sync**: Synchronize user favorites across devices
+- **Session Continuity**: Continue sessions across different devices
+- **Preference Sync**: Sync user preferences and settings
+- **Progress Tracking**: Track user progress through complex workflows
+
+---
+
+## 🎨 Design System & Branding
+
+### **Visual Identity**
+
+#### **Brand Guidelines**
+**Logo Usage**:
+- **Primary Logo**: Main logo for general use
+- **Icon Versions**: Simplified versions for small sizes
+- **Color Variations**: Different color versions for various backgrounds
+- **Usage Guidelines**: Clear guidelines for logo placement and sizing
+
+**Color Palette**:
+- **Primary Colors**: Main brand colors for each domain
+- **Secondary Colors**: Supporting colors for accents and highlights
+- **Neutral Colors**: Grays and whites for backgrounds and text
+- **Semantic Colors**: Success, warning, error, and info colors
+
+#### **Component Design System**
+**Button System**:
+- **Primary Buttons**: Main call-to-action buttons
+- **Secondary Buttons**: Supporting action buttons
+- **Icon Buttons**: Compact buttons with icons
+- **Link Buttons**: Text-based navigation buttons
+
+**Form Components**:
+- **Input Fields**: Text inputs with validation states
+- **Select Dropdowns**: Dropdown menus with search capability
+- **Checkboxes**: Boolean selection components
+- **File Uploads**: Drag-and-drop file upload interfaces
+
+**Layout Components**:
+- **Grid System**: Responsive grid for content organization
+- **Card Components**: Content containers with consistent styling
+- **Modal Dialogs**: Overlay dialogs for focused interactions
+- **Navigation Components**: Headers, sidebars, and breadcrumbs
+
+---
+
+## 🔧 Development Standards
+
+### **Code Quality Standards**
+
+#### **TypeScript Guidelines**
+**Type Safety**:
+- **Strict Mode**: Enable strict TypeScript checking
+- **Interface Definitions**: Clear interfaces for all data structures
+- **Generic Types**: Use generics for reusable components
+- **Type Guards**: Runtime type checking for external data
+
+**Code Organization**:
+- **File Structure**: Logical organization of files and folders
+- **Import/Export**: Consistent import/export patterns
+- **Naming Conventions**: Clear, descriptive naming for all entities
+- **Documentation**: Comprehensive JSDoc comments for all functions
+
+#### **React Best Practices**
+**Component Design**:
+- **Single Responsibility**: Each component has one clear purpose
+- **Composition**: Prefer composition over inheritance
+- **Props Interface**: Clear prop interfaces with default values
+- **Error Boundaries**: Proper error handling and recovery
+
+**Performance Patterns**:
+- **Memoization**: Use React.memo for expensive components
+- **Callback Optimization**: Stable function references with useCallback
+- **Effect Optimization**: Proper dependency arrays for useEffect
+- **State Optimization**: Minimize state updates and optimize state structure
+
+### **Testing Standards**
+
+#### **Test Coverage Requirements**
+- **Unit Tests**: 80%+ coverage for utility functions and business logic
+- **Component Tests**: 70%+ coverage for React components
+- **Integration Tests**: 60%+ coverage for API integrations
+- **E2E Tests**: 50%+ coverage for critical user workflows
+
+#### **Test Quality Standards**
+- **Test Isolation**: Each test should be independent and repeatable
+- **Clear Assertions**: Tests should have clear, specific assertions
+- **Realistic Data**: Use realistic test data that matches production scenarios
+- **Performance Tests**: Include performance benchmarks in test suite
+
+---
+
+## 📋 Project Management
+
+### **Development Methodology**
+
+#### **Agile Development Process**
+**Sprint Planning**:
+- **2-Week Sprints**: Regular development cycles with clear deliverables
+- **Story Estimation**: Use story points for effort estimation
+- **Backlog Grooming**: Regular refinement of feature backlog
+- **Sprint Reviews**: Demonstrate completed features to stakeholders
+
+**Quality Assurance**:
+- **Definition of Done**: Clear criteria for feature completion
+- **Code Reviews**: Peer review for all code changes
+- **Testing Requirements**: Comprehensive testing before deployment
+- **Documentation Updates**: Keep documentation current with changes
+
+#### **Release Management**
+**Version Control**:
+- **Semantic Versioning**: Clear version numbering system
+- **Release Branches**: Separate branches for release preparation
+- **Hotfix Process**: Rapid deployment process for critical fixes
+- **Rollback Procedures**: Safe rollback process for problematic releases
+
+**Deployment Pipeline**:
+- **Continuous Integration**: Automated testing and validation
+- **Staging Deployment**: Test deployments in staging environment
+- **Production Deployment**: Controlled production releases
+- **Monitoring**: Post-deployment monitoring and validation
+
+---
+
+## 🔐 Security & Compliance
+
+### **Security Framework**
+
+#### **Data Protection**
+**Privacy Compliance**:
+- **GDPR Compliance**: European data protection regulation compliance
+- **CCPA Compliance**: California consumer privacy act compliance
+- **Data Minimization**: Collect only necessary data for business purposes
+- **Right to Deletion**: Allow users to delete their personal data
+
+**Data Security**:
+- **Encryption at Rest**: All stored data is encrypted
+- **Encryption in Transit**: All data transmission is encrypted
+- **Key Management**: Secure management of encryption keys
+- **Access Logging**: Complete audit trail for all data access
+
+#### **Application Security**
+**Vulnerability Management**:
+- **Security Scanning**: Regular automated security scans
+- **Dependency Updates**: Keep all dependencies updated for security
+- **Penetration Testing**: Regular security testing by external experts
+- **Incident Response**: Clear procedures for security incidents
+
+**Secure Development**:
+- **Security Training**: Regular security training for development team
+- **Secure Coding**: Follow secure coding practices and guidelines
+- **Code Review**: Security-focused code review process
+- **Threat Modeling**: Identify and mitigate potential security threats
 
 ---
 
 ## 📞 Support & Maintenance
 
-### **Support Channels**
+### **Support Strategy**
 
-- **Documentation**: This comprehensive guide
-- **Issue Tracking**: GitHub Issues
-- **Developer Support**: Technical team contact
-- **Community**: Developer forum/Discord
+#### **Customer Support**
+**Support Channels**:
+- **Email Support**: Comprehensive email support with ticket tracking
+- **Live Chat**: Real-time chat support during business hours
+- **Knowledge Base**: Comprehensive self-service documentation
+- **Video Tutorials**: Step-by-step video guides for common tasks
 
-### **Maintenance Schedule**
+**Support Tiers**:
+- **Basic Support**: Email support with 48-hour response time
+- **Priority Support**: Email and chat support with 24-hour response time
+- **Premium Support**: Phone, email, and chat support with 4-hour response time
+- **Enterprise Support**: Dedicated support team with 1-hour response time
 
-- **Daily**: Automated backups, monitoring
-- **Weekly**: Performance reviews, security updates
-- **Monthly**: Feature updates, bug fixes
-- **Quarterly**: Major releases, architecture reviews
+#### **Technical Support**
+**Developer Support**:
+- **API Documentation**: Comprehensive API documentation and examples
+- **SDK Support**: Support for software development kits
+- **Integration Assistance**: Help with third-party integrations
+- **Custom Development**: Assistance with custom feature development
 
-### **Monitoring & Alerts**
+### **Maintenance Procedures**
 
-```typescript
-// Error tracking
-export const trackError = (error: Error, context: string) => {
-  console.error(`[${context}] Error:`, error);
-  
-  // Send to monitoring service
-  if (process.env.NODE_ENV === 'production') {
-    // Sentry, LogRocket, etc.
-  }
-};
+#### **Regular Maintenance**
+**Daily Tasks**:
+- **System Monitoring**: Monitor system health and performance
+- **Backup Verification**: Verify database backups are successful
+- **Security Monitoring**: Monitor for security threats and anomalies
+- **Performance Monitoring**: Track application performance metrics
 
-// Performance monitoring
-export const trackPerformance = (metric: string, value: number) => {
-  if (process.env.NODE_ENV === 'production') {
-    // Analytics service
-  }
-};
-```
+**Weekly Tasks**:
+- **Dependency Updates**: Update dependencies for security and performance
+- **Performance Review**: Analyze performance metrics and optimize
+- **User Feedback Review**: Review user feedback and plan improvements
+- **Analytics Review**: Analyze business metrics and trends
+
+**Monthly Tasks**:
+- **Security Audit**: Comprehensive security review and testing
+- **Performance Optimization**: Identify and implement performance improvements
+- **Feature Planning**: Plan new features based on user feedback and analytics
+- **Business Review**: Review business metrics and strategic planning
 
 ---
 
-## 📄 License & Credits
+## 🎯 Success Metrics & KPIs
 
-### **License**
-This project is licensed under the MIT License - see the LICENSE file for details.
+### **Technical Metrics**
 
-### **Credits**
-- **3D Graphics**: Three.js community
-- **UI Components**: Tailwind CSS, Lucide React
-- **Backend**: Supabase team
-- **Mobile**: Expo team
-- **Images**: Pexels (stock photos)
+#### **Performance KPIs**
+- **Page Load Time**: Average time for page loading (target: <3 seconds)
+- **API Response Time**: Average API response time (target: <500ms)
+- **3D Render Time**: Time to render 3D scenes (target: <2 seconds)
+- **Mobile Performance**: Frame rate for mobile 3D (target: 30+ fps)
+- **Uptime**: System availability (target: 99.9%)
 
-### **Contributing**
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+#### **Quality KPIs**
+- **Bug Rate**: Bugs per 1000 lines of code (target: <1)
+- **Test Coverage**: Percentage of code covered by tests (target: 80%+)
+- **Code Quality**: Static analysis scores and code review feedback
+- **Security Score**: Security vulnerability assessment scores
+
+### **Business Metrics**
+
+#### **User Engagement KPIs**
+- **Daily Active Users**: Number of users using platform daily
+- **Session Duration**: Average time users spend on platform
+- **Feature Adoption**: Percentage of users using key features
+- **User Retention**: Percentage of users who return after first visit
+
+#### **Revenue KPIs**
+- **Monthly Recurring Revenue (MRR)**: Predictable monthly revenue
+- **Customer Acquisition Cost (CAC)**: Cost to acquire new customers
+- **Customer Lifetime Value (CLV)**: Total value of customer relationship
+- **Churn Rate**: Percentage of customers who cancel subscriptions
+
+#### **Product KPIs**
+- **Tile View Rate**: Average views per tile
+- **Application Rate**: Percentage of views that result in applications
+- **QR Scan Rate**: Effectiveness of QR code system
+- **Conversion Rate**: Overall conversion from view to purchase intent
+
+---
+
+## 🚀 Deployment & Operations
+
+### **Infrastructure Management**
+
+#### **Hosting Strategy**
+**Web Application**:
+- **CDN Integration**: Global content delivery for fast loading
+- **Auto-Scaling**: Automatic scaling based on traffic
+- **Load Balancing**: Distribute traffic across multiple servers
+- **Geographic Distribution**: Servers in multiple regions for global access
+
+**Database Management**:
+- **Supabase Cloud**: Managed PostgreSQL with automatic scaling
+- **Backup Strategy**: Automated daily backups with point-in-time recovery
+- **Performance Monitoring**: Real-time database performance monitoring
+- **Security Updates**: Automatic security patches and updates
+
+#### **Monitoring & Alerting**
+**System Monitoring**:
+- **Uptime Monitoring**: Continuous monitoring of system availability
+- **Performance Monitoring**: Track response times and resource usage
+- **Error Monitoring**: Automatic error detection and alerting
+- **Security Monitoring**: Monitor for security threats and anomalies
+
+**Business Monitoring**:
+- **User Activity**: Track user engagement and feature usage
+- **Revenue Tracking**: Monitor subscription revenue and growth
+- **Support Metrics**: Track support ticket volume and resolution times
+- **Customer Satisfaction**: Monitor user feedback and satisfaction scores
+
+---
+
+## 📚 Documentation & Knowledge Management
+
+### **Documentation Strategy**
+
+#### **Technical Documentation**
+**Developer Documentation**:
+- **API Reference**: Complete API documentation with examples
+- **Component Library**: Documentation for all React components
+- **Database Schema**: Detailed database structure and relationships
+- **Deployment Guide**: Step-by-step deployment instructions
+
+**User Documentation**:
+- **User Guides**: Comprehensive guides for each user type
+- **Video Tutorials**: Step-by-step video instructions
+- **FAQ**: Frequently asked questions and answers
+- **Troubleshooting**: Common issues and solutions
+
+#### **Business Documentation**
+**Process Documentation**:
+- **Business Processes**: Document all business workflows and procedures
+- **Support Procedures**: Customer support processes and escalation
+- **Sales Processes**: Lead generation and conversion procedures
+- **Marketing Procedures**: Marketing campaign and content creation processes
+
+### **Knowledge Sharing**
+
+#### **Internal Knowledge Base**
+- **Technical Wiki**: Internal technical documentation and best practices
+- **Lessons Learned**: Document lessons learned from projects and incidents
+- **Best Practices**: Coding standards and development best practices
+- **Training Materials**: Onboarding materials for new team members
+
+---
+
+## 🎯 Conclusion
+
+The Tile Showroom 3D platform represents a comprehensive solution for modernizing the tile industry through advanced 3D visualization technology. With its multi-tenant architecture, sophisticated analytics system, and seamless mobile integration, the platform provides value to all stakeholders in the tile ecosystem.
+
+### **Key Success Factors**
+
+1. **Technology Innovation**: Cutting-edge 3D visualization and QR code integration
+2. **User Experience**: Intuitive, accessible interface design across all platforms
+3. **Business Value**: Clear ROI for sellers through improved customer engagement
+4. **Scalability**: Architecture designed to grow with business needs
+5. **Security**: Enterprise-grade security and data protection
+6. **Support**: Comprehensive support and documentation for all users
+
+### **Platform Benefits**
+
+**For Customers**:
+- Immersive 3D visualization before purchase decisions
+- Convenient QR code scanning for instant tile information
+- Cross-device synchronization of preferences and favorites
+- Access to comprehensive tile catalog with advanced search
+
+**For Sellers**:
+- Modern technology to showcase tile inventory
+- Detailed analytics to understand customer preferences
+- Efficient inventory management with bulk operations
+- QR code system to bridge physical and digital experiences
+
+**For Platform Owners**:
+- Scalable SaaS business model with recurring revenue
+- Comprehensive analytics for business intelligence
+- Multi-tenant architecture for operational efficiency
+- Growth potential through additional features and integrations
+
+This documentation serves as the definitive guide for understanding, developing, and maintaining the Tile Showroom 3D platform. It provides the foundation for continued development and expansion of the platform's capabilities.
 
 ---
 
